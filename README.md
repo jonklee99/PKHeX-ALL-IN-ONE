@@ -7,7 +7,23 @@ PKHeX
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
 
 # This is an ALL-IN-ONE version of PKHeX which includes ALM (Santacrab2's) and Manu's TeraFinder Plugins
-## Visit [My Discord](https://shinypkm.com) for the most advanced raidbot and tradebot programs 
+## Visit [My Discord](https://shinypkm.com) for the most advanced raidbot and tradebot programs
+
+## Includes the following Plugins
+* PasteImporter
+* ExportBoxToShowdown
+* LegalizeBoxes
+* LiveHeX
+* LivingDex
+* MGDBDownloader
+* SmogonGenner
+* TransferLivingDex
+* URLGenning
+* GPSSPlugin
+* PKSMBankPlugin
+* SettingsEditor
+* TeraFinder Plugin
+* PokeFileNamer See [instructions](https://github.com/architdate/PokeFilename/wiki/CustomNamer)
 
 Pokémon core series save editor, programmed in [C#](https://en.wikipedia.org/wiki/C_Sharp_%28programming_language%29).
 
