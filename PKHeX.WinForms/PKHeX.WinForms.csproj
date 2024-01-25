@@ -27,6 +27,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="MainWindow\Plugins\AutoModPlugins.dll" />
+    <None Remove="MainWindow\Plugins\TeraFinder.Plugins_v3.1.0.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainWindow\Plugins\AutoModPlugins.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins_v3.1.0.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PKHeX.Core\PKHeX.Core.csproj" />
     <ProjectReference Include="..\PKHeX.Drawing.Misc\PKHeX.Drawing.Misc.csproj" />
     <ProjectReference Include="..\PKHeX.Drawing.PokeSprite\PKHeX.Drawing.PokeSprite.csproj" />

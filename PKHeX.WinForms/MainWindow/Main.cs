@@ -260,10 +260,6 @@ public partial class Main : Form
 
     private void FormLoadPlugins()
     {
-#if !MERGED // merged should load dlls from within too, folder is no longer required
-        if (!Directory.Exists(PluginPath))
-            return;
-#endif
         try
         {
             Plugins.AddRange(PluginLoader.LoadPlugins<IPlugin>(PluginPath, Settings.Startup.PluginLoadMethod));
@@ -273,8 +269,15 @@ public partial class Main : Form
             WinFormsUtil.Error(MsgPluginFailLoad, c);
             return;
         }
+        catch
+        {
+            return;
+        }
+
         foreach (var p in Plugins.OrderBy(z => z.Priority))
+        {
             p.Initialize(C_SAV, PKME_Tabs, menuStrip1, Program.CurrentVersion);
+        }
     }
 
     // Main Menu Strip UI Functions
