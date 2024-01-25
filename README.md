@@ -6,8 +6,8 @@ PKHeX
 
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
 
-# This is an ALl-IN-ONE version of PKHeX which includes ALM (Santacrab2's) and Manu's TeraFinder Plugins
-## Visit shinypkm.com for the most advanced raidbot and tradebot programs 
+# This is an ALL-IN-ONE version of PKHeX which includes ALM (Santacrab2's) and Manu's TeraFinder Plugins
+## Visit [My Discord](https://shinypkm.com) for the most advanced raidbot and tradebot programs 
 
 Pokémon core series save editor, programmed in [C#](https://en.wikipedia.org/wiki/C_Sharp_%28programming_language%29).
 
