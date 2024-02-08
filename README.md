@@ -41,6 +41,10 @@ Pokémon core series save editor, programmed in [C#](https://en.wikipedia.org/wi
 
 - [PKHeX-AIO](https://github.com/bdawg1989/PKHeX-ALL-IN-ONE) - A single .exe with ALM, TeraFinder, and PokeNamer plugins included.  No extra folders and plugin.dll's to keep up with.
 
+## MergeBot - The Ultimate TradeBot
+
+- [Source Code](https://github.com/bdawg1989/MergeBot)
+
 ## Grand Oak - SysBot Helper
 - A discord bot that helps with legality issues if someone submits a wrong showdown format.  [Join My Discord To Learn More](https://discord.gg/GtUu9BmCzy)
   
