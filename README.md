@@ -35,7 +35,7 @@ Pokémon core series save editor, programmed in [C#](https://en.wikipedia.org/wi
 
 ## Scarlet/Violet RaidBot
 
-- [NotRaidBot](https://github.com/bdawg1989/NotPaldea.net) - The most advanced RaidBot for Scarlet/Violet available, period.
+- [NotRaidBot](https://github.com/bdawg1989/NotPaldeaNET) - The most advanced RaidBot for Scarlet/Violet available, period.
   
 ## PKHeX - AIO (All-In-One)
 
