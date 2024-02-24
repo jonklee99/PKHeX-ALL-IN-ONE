@@ -24,7 +24,7 @@ public sealed class SaveBlockAccessor8SWSH : SCBlockAccessor, ISaveBlock8Main
     public Record8 Records { get; }
     public TrainerCard8 TrainerCard{ get; }
     public FashionUnlock8 Fashion { get; }
-    public RaidSpawnList8 Raid { get; }
+    public RaidSpawnList8 RaidGalar { get; }
     public RaidSpawnList8 RaidArmor { get; }
     public RaidSpawnList8 RaidCrown { get; }
     public TitleScreen8 TitleScreen { get; }
@@ -48,11 +48,11 @@ public sealed class SaveBlockAccessor8SWSH : SCBlockAccessor, ISaveBlock8Main
         Daycare = new Daycare8(sav, GetBlock(KDaycare));
         Records = new Record8(sav, GetBlock(KRecord));
         Fashion = new FashionUnlock8(sav, GetBlock(KFashionUnlock));
-        Raid = new RaidSpawnList8(sav, GetBlock(KRaidSpawnList), RaidSpawnList8.RaidCountLegal_O0);
+        RaidGalar = new RaidSpawnList8(sav, GetBlock(KRaidSpawnList), RaidSpawnList8.RaidCountLegal_O0);
         RaidArmor = new RaidSpawnList8(sav, GetBlockSafe(KRaidSpawnListR1), RaidSpawnList8.RaidCountLegal_R1);
         RaidCrown = new RaidSpawnList8(sav, GetBlockSafe(KRaidSpawnListR2), RaidSpawnList8.RaidCountLegal_R2);
         TitleScreen = new TitleScreen8(sav, GetBlock(KTitleScreenTeam));
-        TeamIndexes = new TeamIndexes8(sav, GetBlock(KTeamIndexes));
+        TeamIndexes = new TeamIndexes8(sav, GetBlock(KTeamIndexes), GetBlock(KTeamLocks));
         FameTime = new HallOfFameTime8(sav, GetBlock(KEnteredHallOfFame));
     }
 
@@ -97,6 +97,7 @@ public sealed class SaveBlockAccessor8SWSH : SCBlockAccessor, ISaveBlock8Main
     private const uint KTrainer3EndlessRecordData = 0x7BD78AF1; // Trainer 3's Data of Best Endless Dynamax Adventure Record
     private const uint KTrainer4EndlessRecordData = 0x7AD7895E; // Trainer 4's Data of Best Endless Dynamax Adventure Record
     private const uint KPokeJobStorage = 0xB25C772B; // Pokémon storage while they are doing Jobs
+    private const uint KTeamLocks = 0x605EBC30; 
 
     // Rental Teams - Objects (Blocks)
     private const uint KRentalTeam1 = 0x149A1DD0;
