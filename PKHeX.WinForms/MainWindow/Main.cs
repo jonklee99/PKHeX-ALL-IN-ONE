@@ -227,7 +227,7 @@ public partial class Main : Form
         showChangelog = false;
 
         // Version Check
-        if (Settings.Startup.Version.Length > 0 && Settings.Startup.ShowChangelogOnUpdate) // already run on system
+        if (Settings.Startup.Version.Length != 0 && Settings.Startup.ShowChangelogOnUpdate) // already run on system
         {
             bool parsed = Version.TryParse(Settings.Startup.Version, out var lastrev);
             showChangelog = parsed && lastrev < Program.CurrentVersion;
@@ -425,7 +425,7 @@ public partial class Main : Form
         CommonEdits.ShowdownSetBehaviorNature = settings.Import.ApplyNature;
         C_SAV.FlagIllegal = settings.Display.FlagIllegal;
         C_SAV.M.Hover.GlowHover = settings.Hover.HoverSlotGlowEdges;
-        ParseSettings.InitFromSettings(settings.Legality);
+        ParseSettings.Initialize(settings.Legality);
         PKME_Tabs.HideSecretValues = C_SAV.HideSecretDetails = settings.Privacy.HideSecretDetails;
         WinFormsUtil.DetectSaveFileOnFileOpen = settings.Startup.TryDetectRecentSave;
         SelectablePictureBox.FocusBorderDeflate = GenderToggle.FocusBorderDeflate = settings.Display.FocusBorderDeflate;
@@ -621,7 +621,7 @@ public partial class Main : Form
             case SaveFile s: return OpenSAV(s, path);
             case IPokeGroup b: return OpenGroup(b);
             case MysteryGift g: return OpenMysteryGift(g, path);
-            case IEnumerable<byte[]> pkms: return OpenPCBoxBin(pkms);
+            case ConcatenatedEntitySet pkms: return OpenPCBoxBin(pkms);
             case IEncounterConvertible enc: return OpenPKM(enc.ConvertToPKM(C_SAV.SAV));
 
             case SAV3GCMemoryCard gc:
@@ -681,10 +681,9 @@ public partial class Main : Form
         return true;
     }
 
-    private bool OpenPCBoxBin(IEnumerable<byte[]> pkms)
+    private bool OpenPCBoxBin(ConcatenatedEntitySet pkms)
     {
-        var data = pkms.SelectMany(z => z).ToArray();
-        if (!C_SAV.OpenPCBoxBin(data, out string c))
+        if (!C_SAV.OpenPCBoxBin(pkms.Data.Span, out string c))
         {
             WinFormsUtil.Alert(MsgFileLoadIncompatible, c);
             return true;
