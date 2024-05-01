@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using static PKHeX.Core.LegalityCheckStrings;
 
 namespace PKHeX.Core;
@@ -45,6 +46,8 @@ public static class EncounterFinder
 
             // Looks like we might have a good enough match. Check if this is really a good match.
             info.EncounterMatch = enc;
+            var moveResults = new MoveResult[4];
+            LearnVerifier.Verify(moveResults, pk, info.EncounterMatch, info.EvoChainsAllGens);
             if (e.Comment.Length > 0)
                 info.Parse.Add(e);
             if (!VerifySecondaryChecks(pk, info, encounter))
@@ -105,9 +108,25 @@ public static class EncounterFinder
         }
 
         var moves = info.Moves.AsSpan();
-        LearnVerifier.Verify(moves, pk, info.EncounterMatch, info.EvoChainsAllGens);
-        if (!MoveResult.AllValid(moves) && iterator.PeekIsNext())
-            return false;
+        var moveResults = new MoveResult[4];
+
+        LearnVerifier.Verify(moveResults, pk, info.EncounterMatch, info.EvoChainsAllGens);
+
+        for (int i = 0; i < moves.Length; i++)
+        {
+            if (!moveResults[i].Valid)
+            {
+                var speciesName = SpeciesName.GetSpeciesNameGeneration(pk.Species, (int)LanguageID.English, (byte)pk.Generation);
+                string moveName = Enum.IsDefined(typeof(Move), moves[i])
+                    ? Enum.GetName(typeof(Move), moves[i]) ?? "Unknown Move"
+                    : "Unknown Move";
+
+                info.Parse.Add(new CheckResult(Severity.Invalid, CheckIdentifier.CurrentMove, $"Move {moveName} is not valid for {speciesName}."));
+
+                if (iterator.PeekIsNext())
+                    return false;
+            }
+        }
 
         if (!info.Parse.TrueForAll(static z => z.Valid) && iterator.PeekIsNext())
             return false;
@@ -165,10 +184,25 @@ public static class EncounterFinder
     {
         info.EncounterMatch = new EncounterInvalid(pk);
         string hint = GetHintWhyNotFound(pk, info.EncounterMatch.Generation);
-
         info.Parse.Add(new CheckResult(Severity.Invalid, CheckIdentifier.Encounter, hint));
+
         LearnVerifierRelearn.Verify(info.Relearn, info.EncounterOriginal, pk);
         LearnVerifier.Verify(info.Moves, pk, info.EncounterMatch, info.EvoChainsAllGens);
+
+        var moveResults = new MoveResult[4];
+        LearnVerifier.Verify(moveResults, pk, info.EncounterMatch, info.EvoChainsAllGens);
+
+        for (int i = 0; i < moveResults.Length; i++)
+        {
+            if (!moveResults[i].Valid)
+            {
+                string moveName = Enum.IsDefined(typeof(Move), pk.Moves[i])
+                    ? Enum.GetName(typeof(Move), pk.Moves[i]) ?? "Unknown Move"
+                    : "Unknown Move";
+
+                info.Parse.Add(new CheckResult(Severity.Invalid, CheckIdentifier.CurrentMove, $"Move {moveName} is not valid for {SpeciesName.GetSpeciesNameGeneration(pk.Species, 2, (byte)pk.Generation)}."));
+            }
+        }
     }
 
     private static string GetHintWhyNotFound(PKM pk, byte generation)
