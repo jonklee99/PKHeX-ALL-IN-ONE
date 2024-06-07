@@ -45,11 +45,14 @@
 
   <ItemGroup>
     <EmbeddedResource Include="MainWindow\Plugins\PokeFilename.API.dll" />
-    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins.dll" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="MainWindow\Plugins\PluginPile.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins.dll" />
   </ItemGroup>
 
   <ItemGroup>
