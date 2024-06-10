@@ -320,7 +320,7 @@ public sealed class LegalityAnalysis
         HyperTraining.Verify(this);
         MiscValues.VerifyVersionEvolution(this);
 
-        // Trash.Verify(this);
+        Trash.Verify(this);
         if (format < 8)
             return;
 
