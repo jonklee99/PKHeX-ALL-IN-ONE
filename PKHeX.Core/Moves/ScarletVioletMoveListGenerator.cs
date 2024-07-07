@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using PKHeX.Core;
 
 namespace PKHeX.Core.Moves
 {
