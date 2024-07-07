@@ -12,7 +12,7 @@ namespace PKHeX.Core.Moves
             try
             {
                 using var errorLogger = new StreamWriter(errorLogPath, true);
-                errorLogger.WriteLine($"[{DateTime.Now}] Starting CSV generation process.");
+                errorLogger.WriteLine($"[{DateTime.Now}] Starting CSV generation process for Legends: Arceus.");
 
                 var gameStrings = GameInfo.GetStrings("en");
                 errorLogger.WriteLine($"[{DateTime.Now}] Game strings loaded.");
@@ -26,12 +26,22 @@ namespace PKHeX.Core.Moves
                 }
                 errorLogger.WriteLine($"[{DateTime.Now}] LearnSource obtained successfully.");
 
+                var pt = PersonalTable.LA;
+                errorLogger.WriteLine($"[{DateTime.Now}] PersonalTable for Legends: Arceus loaded.");
+
                 using var writer = new StreamWriter(outputPath);
                 writer.WriteLine("pokemon_name,dex_number,move_name,level,move_type,power,accuracy,generations,pp,category");
                 errorLogger.WriteLine($"[{DateTime.Now}] CSV file header written.");
 
-                for (ushort speciesIndex = 1; speciesIndex <= Legal.MaxSpeciesID_8a; speciesIndex++)
+                for (ushort speciesIndex = 1; speciesIndex < pt.Table.Length; speciesIndex++)
                 {
+                    // Check if the species is present in Legends: Arceus
+                    if (!pt.IsSpeciesInGame(speciesIndex))
+                    {
+                        errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in Legends: Arceus. Skipping.");
+                        continue;
+                    }
+
                     var speciesName = gameStrings.specieslist[speciesIndex];
                     if (string.IsNullOrEmpty(speciesName))
                     {
@@ -44,6 +54,13 @@ namespace PKHeX.Core.Moves
 
                     for (byte form = 0; form < forms.Length; form++)
                     {
+                        // Check if this specific form is present in the game
+                        if (!pt.IsPresentInGame(speciesIndex, form))
+                        {
+                            errorLogger.WriteLine($"[{DateTime.Now}] Form {form} of species {speciesIndex} not present in Legends: Arceus. Skipping.");
+                            continue;
+                        }
+
                         if (!learnSource8LA.TryGetPersonal(speciesIndex, form, out var personalInfo))
                         {
                             errorLogger.WriteLine($"[{DateTime.Now}] Failed to get personal info for {speciesName} form {form}. Skipping.");

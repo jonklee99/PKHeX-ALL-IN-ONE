@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace PKHeX.Core.Moves
 {
@@ -26,12 +25,22 @@ namespace PKHeX.Core.Moves
                 }
                 errorLogger.WriteLine($"[{DateTime.Now}] LearnSource obtained successfully.");
 
+                var pt = PersonalTable.SWSH;
+                errorLogger.WriteLine($"[{DateTime.Now}] PersonalTable for SWSH loaded.");
+
                 using var writer = new StreamWriter(outputPath);
                 writer.WriteLine("pokemon_name,dex_number,move_name,level,move_type,power,accuracy,generations,pp,category");
                 errorLogger.WriteLine($"[{DateTime.Now}] CSV file header written.");
 
-                for (ushort speciesIndex = 1; speciesIndex <= Legal.MaxSpeciesID_8; speciesIndex++)
+                for (ushort speciesIndex = 1; speciesIndex < pt.Table.Length; speciesIndex++)
                 {
+                    // Check if the species is present in SWSH
+                    if (!pt.IsSpeciesInGame(speciesIndex))
+                    {
+                        errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in SWSH. Skipping.");
+                        continue;
+                    }
+
                     var speciesName = gameStrings.specieslist[speciesIndex];
                     if (string.IsNullOrEmpty(speciesName))
                     {
@@ -44,6 +53,13 @@ namespace PKHeX.Core.Moves
 
                     for (byte form = 0; form < forms.Length; form++)
                     {
+                        // Check if this specific form is present in the game
+                        if (!pt.IsPresentInGame(speciesIndex, form))
+                        {
+                            errorLogger.WriteLine($"[{DateTime.Now}] Form {form} of species {speciesIndex} not present in SWSH. Skipping.");
+                            continue;
+                        }
+
                         if (!learnSource8SWSH.TryGetPersonal(speciesIndex, form, out var personalInfo))
                         {
                             errorLogger.WriteLine($"[{DateTime.Now}] Failed to get personal info for {speciesName} form {form}. Skipping.");
