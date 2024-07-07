@@ -1375,7 +1375,7 @@ public partial class Main : Form
         {
             string executablePath = Application.ExecutablePath;
             string executableDirectory = Path.GetDirectoryName(executablePath);
-            string outputPath = Path.Combine(executableDirectory, "scarlet_violet_moves.csv");
+            string outputPath = Path.Combine(executableDirectory, "sv_moves.csv");
             string errorLogPath = Path.Combine(executableDirectory, "sv_error_log.txt");
 
             ScarletVioletMoveListGenerator.GenerateScarletVioletMovesCSV(outputPath, errorLogPath);
