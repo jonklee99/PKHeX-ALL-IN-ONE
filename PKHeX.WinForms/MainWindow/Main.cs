@@ -1394,4 +1394,82 @@ public partial class Main : Form
             MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
+
+    private void generateBDSPMovesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "bdsp_moves.csv");
+            string errorLogPath = Path.Combine(executableDirectory, "bdsp_error_log.txt");
+
+            BDSPMoveListGenerator.GenerateBDSPMovesCSV(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"BDSP moves CSV generated successfully at:\n{outputPath}", "CSV Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate CSV file. Please check the error log at:\n{errorLogPath}", "CSV Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void generateSWSHMovesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "swsh_moves.csv");
+            string errorLogPath = Path.Combine(executableDirectory, "swsh_error_log.txt");
+
+            SWSHMoveListGenerator.GenerateSWSHMovesCSV(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"SWSH moves CSV generated successfully at:\n{outputPath}", "CSV Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate CSV file. Please check the error log at:\n{errorLogPath}", "CSV Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void generateLGPEMovesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "lgpe_moves.csv");
+            string errorLogPath = Path.Combine(executableDirectory, "lgpe_error_log.txt");
+
+            LGPEMoveListGenerator.GenerateLGPEMovesCSV(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"LGPE moves CSV generated successfully at:\n{outputPath}", "CSV Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate CSV file. Please check the error log at:\n{errorLogPath}", "CSV Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 }
