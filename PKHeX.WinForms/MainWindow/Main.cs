@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using PKHeX.Core;
+using PKHeX.Core.Moves;
 using PKHeX.Drawing;
 using PKHeX.Drawing.Misc;
 using PKHeX.Drawing.PokeSprite;
@@ -1341,4 +1342,56 @@ public partial class Main : Form
     private void ClickUndo(object sender, EventArgs e) => C_SAV.ClickUndo();
     private void ClickRedo(object sender, EventArgs e) => C_SAV.ClickRedo();
     #endregion
+
+    private void generateLAMovesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "legends_arceus_moves.csv");
+            string errorLogPath = Path.Combine(executableDirectory, "la_error_log.txt");
+
+            LegendsMoveListGenerator.GenerateLegendsArceusMovesCSV(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"Legends Arceus moves CSV generated successfully at:\n{outputPath}", "CSV Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate CSV file. Please check the error log at:\n{errorLogPath}", "CSV Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void generateSVMovesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "scarlet_violet_moves.csv");
+            string errorLogPath = Path.Combine(executableDirectory, "sv_error_log.txt");
+
+            ScarletVioletMoveListGenerator.GenerateScarletVioletMovesCSV(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"Scarlet/Violet moves CSV generated successfully at:\n{outputPath}", "CSV Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate CSV file. Please check the error log at:\n{errorLogPath}", "CSV Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 }

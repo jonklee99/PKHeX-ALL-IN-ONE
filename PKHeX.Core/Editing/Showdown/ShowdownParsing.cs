@@ -9,7 +9,7 @@ namespace PKHeX.Core;
 /// </summary>
 public static class ShowdownParsing
 {
-    private static readonly string[] genderForms = ["", "F", ""];
+    public static readonly string[] genderForms = ["", "F", ""];
 
     /// <summary>
     /// Gets the Form ID from the input <see cref="name"/>.
