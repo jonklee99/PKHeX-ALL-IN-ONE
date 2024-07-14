@@ -75,6 +75,7 @@ namespace PKHeX.Core.Moves
                         }
 
                         var allMoves = new Dictionary<ushort, int>();
+                        var eggMoves = new HashSet<ushort>();
 
                         // Process level-up moves
                         var learnset = learnSource8SWSH.GetLearnset(speciesIndex, form);
@@ -88,7 +89,8 @@ namespace PKHeX.Core.Moves
                         // Process egg moves
                         foreach (var moveId in learnSource8SWSH.GetEggMoves(speciesIndex, form))
                         {
-                            allMoves[moveId] = Math.Min(allMoves.ContainsKey(moveId) ? allMoves[moveId] : int.MaxValue, 0);
+                            allMoves[moveId] = 0; // Keep egg moves at 0
+                            eggMoves.Add(moveId);
                         }
 
                         // Process TR moves
@@ -98,14 +100,19 @@ namespace PKHeX.Core.Moves
                             if (personalInfo.GetIsLearnTR(i))
                             {
                                 var moveId = trMoves[i];
-                                allMoves[moveId] = Math.Min(allMoves.ContainsKey(moveId) ? allMoves[moveId] : int.MaxValue, 0);
+                                allMoves[moveId] = Math.Min(allMoves.ContainsKey(moveId) ? allMoves[moveId] : int.MaxValue, 1); // Change 0 to 1 for TR moves
                             }
                         }
 
                         // Write all moves for this species/form
                         foreach (var move in allMoves)
                         {
-                            ProcessMove(move.Key, move.Value, fullPokemonName, dexNumber, gameStrings, writer, errorLogger);
+                            int level = move.Value;
+                            if (level == 0 && !eggMoves.Contains(move.Key))
+                            {
+                                level = 1; // Change 0 to 1 for non-egg moves
+                            }
+                            ProcessMove(move.Key, level, fullPokemonName, dexNumber, gameStrings, writer, errorLogger);
                         }
                     }
                 }

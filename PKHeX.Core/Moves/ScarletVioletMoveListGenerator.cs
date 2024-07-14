@@ -34,7 +34,6 @@ namespace PKHeX.Core.Moves
 
                 for (ushort speciesIndex = 1; speciesIndex <= Legal.MaxSpeciesID_9; speciesIndex++)
                 {
-                    // Check if the species is present in Scarlet/Violet
                     if (!pt.IsSpeciesInGame(speciesIndex))
                     {
                         errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in SV. Skipping.");
@@ -53,7 +52,6 @@ namespace PKHeX.Core.Moves
 
                     for (byte form = 0; form < forms.Length; form++)
                     {
-                        // Check if this specific form is present in the game
                         if (!pt.IsPresentInGame(speciesIndex, form))
                         {
                             errorLogger.WriteLine($"[{DateTime.Now}] Form {form} of species {speciesIndex} not present in SV. Skipping.");
@@ -98,13 +96,13 @@ namespace PKHeX.Core.Moves
                         // Process egg moves
                         foreach (var moveId in eggMoves)
                         {
-                            allMoves[moveId] = Math.Min(allMoves.ContainsKey(moveId) ? allMoves[moveId] : int.MaxValue, 0);
+                            allMoves[moveId] = 0; // Egg moves are level 0
                         }
 
                         // Process reminder moves
                         foreach (var moveId in reminderMoves)
                         {
-                            allMoves[moveId] = Math.Min(allMoves.ContainsKey(moveId) ? allMoves[moveId] : int.MaxValue, 0);
+                            allMoves[moveId] = allMoves.ContainsKey(moveId) ? allMoves[moveId] : 1; // Set to 1 if not already set
                         }
 
                         // Process TM moves
@@ -113,7 +111,7 @@ namespace PKHeX.Core.Moves
                             if (personalInfo.GetIsLearnTM(i))
                             {
                                 var moveId = tmMoves[i];
-                                allMoves[moveId] = Math.Min(allMoves.ContainsKey(moveId) ? allMoves[moveId] : int.MaxValue, 0);
+                                allMoves[moveId] = allMoves.ContainsKey(moveId) ? allMoves[moveId] : 1; // Set to 1 if not already set
                             }
                         }
 
