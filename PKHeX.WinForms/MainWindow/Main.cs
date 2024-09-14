@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using PKHeX.Core;
+using PKHeX.Core.Encounters;
 using PKHeX.Core.Moves;
 using PKHeX.Drawing;
 using PKHeX.Drawing.Misc;
@@ -583,8 +584,8 @@ public partial class Main : Form
 #if DEBUG
         OpenFile(input, path, ext);
 #else
-            try { OpenFile(input, path, ext); }
-            catch (Exception e) { WinFormsUtil.Error(MsgFileLoadFail + "\nPath: " + path, e); }
+        try { OpenFile(input, path, ext); }
+        catch (Exception e) { WinFormsUtil.Error(MsgFileLoadFail + "\nPath: " + path, e); }
 #endif
     }
 
@@ -858,7 +859,7 @@ public partial class Main : Form
         string version = $"d-{date:yyyyMMdd}";
 #else
         var v = Program.CurrentVersion;
-        string version = $"{2000+v.Major:00}{v.Minor:00}{v.Build:00}";
+        string version = $"{2000 + v.Major:00}{v.Minor:00}{v.Build:00}";
 #endif
         return $"PKH{(HaX ? "a" : "e")}X ({version})";
     }
@@ -1465,6 +1466,33 @@ public partial class Main : Form
             else
             {
                 MessageBox.Show($"Failed to generate CSV file. Please check the error log at:\n{errorLogPath}", "CSV Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void sVMetLocationsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "sv_encounters.json");
+            string errorLogPath = Path.Combine(executableDirectory, "sv_encounters_error_log.txt");
+
+            // Call the method to generate the encounters JSON
+            EncounterLocationsSV.GenerateEncounterDataJSON(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"Scarlet/Violet encounters JSON generated successfully at:\n{outputPath}", "JSON Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate JSON file. Please check the error log at:\n{errorLogPath}", "JSON Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         catch (Exception ex)
