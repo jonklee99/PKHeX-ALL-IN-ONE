@@ -125,54 +125,6 @@ namespace PKHeX.Core.Encounters
                 ProcessStaticEncounters(Encounters9.StaticSL, "Scarlet", encounterData, gameStrings, errorLogger);
                 ProcessStaticEncounters(Encounters9.StaticVL, "Violet", encounterData, gameStrings, errorLogger);
 
-                // Process trade encounters
-                foreach (var encounter in Encounters9.TradeGift_SV)
-                {
-                    var speciesIndex = encounter.Species;
-                    var form = encounter.Form;
-
-                    var personalInfo = pt[speciesIndex];
-                    if (personalInfo is null || !personalInfo.IsPresentInGame)
-                    {
-                        errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in SV. Skipping.");
-                        continue;
-                    }
-
-                    var speciesName = gameStrings.specieslist[speciesIndex];
-                    if (string.IsNullOrEmpty(speciesName))
-                    {
-                        errorLogger.WriteLine($"[{DateTime.Now}] Empty species name for index {speciesIndex}. Skipping.");
-                        continue;
-                    }
-
-                    var locationName = "In-Game Trade";
-                    var locationId = -1; // Arbitrary ID for trades
-
-                    string dexNumber = speciesIndex.ToString();
-                    if (form > 0)
-                        dexNumber += $"-{form}";
-
-                    if (!encounterData.ContainsKey(dexNumber))
-                        encounterData[dexNumber] = new List<EncounterInfo>();
-
-                    encounterData[dexNumber].Add(new EncounterInfo
-                    {
-                        SpeciesName = speciesName,
-                        SpeciesIndex = speciesIndex,
-                        Form = form,
-                        LocationName = locationName,
-                        LocationId = locationId,
-                        MinLevel = encounter.Level,
-                        MaxLevel = encounter.Level,
-                        EncounterType = "Trade",
-                        IsShinyLocked = encounter.Shiny == Shiny.Never,
-                        IsGift = true,
-                        FixedBall = encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : null
-                    });
-
-                    errorLogger.WriteLine($"[{DateTime.Now}] Processed trade encounter: {speciesName} (Dex: {dexNumber}) via trade at Level {encounter.Level}");
-                }
-
                 var jsonOptions = new JsonSerializerOptions
                 {
                     WriteIndented = true
@@ -241,7 +193,7 @@ namespace PKHeX.Core.Encounters
                     MaxLevel = encounter.Level,
                     EncounterType = "Static",
                     IsShinyLocked = encounter.Shiny == Shiny.Never,
-                    IsGift = false, // Set to true if appropriate
+                    IsGift = false,
                     FixedBall = encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : null,
                     EncounterVersion = versionName
                 });
