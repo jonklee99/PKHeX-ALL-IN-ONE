@@ -58,6 +58,11 @@ namespace PKHeX.WinForms
             generateBDSPMovesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             generateSWSHMovesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             generateLGPEMovesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            generateMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            sVMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            sWSHMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            lAMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            bDSPMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             Menu_Options = new System.Windows.Forms.ToolStripMenuItem();
             Menu_Language = new System.Windows.Forms.ToolStripMenuItem();
             CB_MainLanguage = new System.Windows.Forms.ToolStripComboBox();
@@ -73,8 +78,7 @@ namespace PKHeX.WinForms
             PKME_Tabs = new Controls.PKMEditor();
             C_SAV = new Controls.SAVEditor();
             splitContainer2 = new System.Windows.Forms.SplitContainer();
-            generateMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            sVMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            lGPEMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -333,6 +337,41 @@ namespace PKHeX.WinForms
             generateLGPEMovesToolStripMenuItem.Text = "Generate LGPE Moves";
             generateLGPEMovesToolStripMenuItem.Click += generateLGPEMovesToolStripMenuItem_Click;
             // 
+            // generateMetLocationsToolStripMenuItem
+            // 
+            generateMetLocationsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { sVMetLocationsToolStripMenuItem, sWSHMetLocationsToolStripMenuItem, lAMetLocationsToolStripMenuItem, bDSPMetLocationsToolStripMenuItem, lGPEMetLocationsToolStripMenuItem });
+            generateMetLocationsToolStripMenuItem.Name = "generateMetLocationsToolStripMenuItem";
+            generateMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            generateMetLocationsToolStripMenuItem.Text = "Generate Met Locations";
+            // 
+            // sVMetLocationsToolStripMenuItem
+            // 
+            sVMetLocationsToolStripMenuItem.Name = "sVMetLocationsToolStripMenuItem";
+            sVMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            sVMetLocationsToolStripMenuItem.Text = "SV Met Locations";
+            sVMetLocationsToolStripMenuItem.Click += sVMetLocationsToolStripMenuItem_Click;
+            // 
+            // sWSHMetLocationsToolStripMenuItem
+            // 
+            sWSHMetLocationsToolStripMenuItem.Name = "sWSHMetLocationsToolStripMenuItem";
+            sWSHMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            sWSHMetLocationsToolStripMenuItem.Text = "SWSH Met Locations";
+            sWSHMetLocationsToolStripMenuItem.Click += sWSHMetLocationsToolStripMenuItem_Click;
+            // 
+            // lAMetLocationsToolStripMenuItem
+            // 
+            lAMetLocationsToolStripMenuItem.Name = "lAMetLocationsToolStripMenuItem";
+            lAMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            lAMetLocationsToolStripMenuItem.Text = "LA Met Locations";
+            lAMetLocationsToolStripMenuItem.Click += lAMetLocationsToolStripMenuItem_Click;
+            // 
+            // bDSPMetLocationsToolStripMenuItem
+            // 
+            bDSPMetLocationsToolStripMenuItem.Name = "bDSPMetLocationsToolStripMenuItem";
+            bDSPMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            bDSPMetLocationsToolStripMenuItem.Text = "BDSP Met Locations";
+            bDSPMetLocationsToolStripMenuItem.Click += bDSPMetLocationsToolStripMenuItem_Click;
+            // 
             // Menu_Options
             // 
             Menu_Options.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { Menu_Language, Menu_Undo, Menu_Redo, Menu_Settings, Menu_About });
@@ -524,19 +563,12 @@ namespace PKHeX.WinForms
             splitContainer2.SplitterWidth = 1;
             splitContainer2.TabIndex = 106;
             // 
-            // generateMetLocationsToolStripMenuItem
+            // lGPEMetLocationsToolStripMenuItem
             // 
-            generateMetLocationsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { sVMetLocationsToolStripMenuItem });
-            generateMetLocationsToolStripMenuItem.Name = "generateMetLocationsToolStripMenuItem";
-            generateMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            generateMetLocationsToolStripMenuItem.Text = "Generate Met Locations";
-            // 
-            // sVMetLocationsToolStripMenuItem
-            // 
-            sVMetLocationsToolStripMenuItem.Name = "sVMetLocationsToolStripMenuItem";
-            sVMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            sVMetLocationsToolStripMenuItem.Text = "SV Met Locations";
-            sVMetLocationsToolStripMenuItem.Click += sVMetLocationsToolStripMenuItem_Click;
+            lGPEMetLocationsToolStripMenuItem.Name = "lGPEMetLocationsToolStripMenuItem";
+            lGPEMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            lGPEMetLocationsToolStripMenuItem.Text = "LGPE Met Locations";
+            lGPEMetLocationsToolStripMenuItem.Click += lGPEMetLocationsToolStripMenuItem_Click;
             // 
             // Main
             // 
@@ -618,6 +650,10 @@ namespace PKHeX.WinForms
         private System.Windows.Forms.ToolStripMenuItem generateLGPEMovesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem generateMetLocationsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sVMetLocationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sWSHMetLocationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lAMetLocationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bDSPMetLocationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lGPEMetLocationsToolStripMenuItem;
     }
 }
 

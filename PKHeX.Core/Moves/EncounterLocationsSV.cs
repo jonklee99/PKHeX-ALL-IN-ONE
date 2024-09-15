@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
+using System.Linq;
 
 namespace PKHeX.Core.Encounters
 {
@@ -24,106 +25,27 @@ namespace PKHeX.Core.Encounters
                 var encounterData = new Dictionary<string, List<EncounterInfo>>();
 
                 // Process regular encounter slots
-                foreach (var area in Encounters9.Slots)
-                {
-                    var locationId = area.Location;
-                    var locationName = gameStrings.GetLocationName(false, (ushort)locationId, 9, 9, GameVersion.SV);
-                    if (string.IsNullOrEmpty(locationName))
-                        locationName = $"Unknown Location {locationId}";
+                ProcessRegularEncounters(encounterData, gameStrings, pt, errorLogger);
 
-                    foreach (var slot in area.Slots)
-                    {
-                        var speciesIndex = slot.Species;
-                        var form = slot.Form;
-
-                        var personalInfo = pt[speciesIndex];
-                        if (personalInfo is null || !personalInfo.IsPresentInGame)
-                        {
-                            errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in SV. Skipping.");
-                            continue;
-                        }
-
-                        var speciesName = gameStrings.specieslist[speciesIndex];
-                        if (string.IsNullOrEmpty(speciesName))
-                        {
-                            errorLogger.WriteLine($"[{DateTime.Now}] Empty species name for index {speciesIndex}. Skipping.");
-                            continue;
-                        }
-
-                        string dexNumber = speciesIndex.ToString();
-                        if (form > 0)
-                            dexNumber += $"-{form}";
-
-                        if (!encounterData.ContainsKey(dexNumber))
-                            encounterData[dexNumber] = new List<EncounterInfo>();
-
-                        encounterData[dexNumber].Add(new EncounterInfo
-                        {
-                            SpeciesName = speciesName,
-                            SpeciesIndex = speciesIndex,
-                            Form = form,
-                            LocationName = locationName,
-                            LocationId = locationId,
-                            MinLevel = slot.LevelMin,
-                            MaxLevel = slot.LevelMax,
-                            EncounterType = "Wild"
-                        });
-
-                        errorLogger.WriteLine($"[{DateTime.Now}] Processed encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {locationId}), Levels {slot.LevelMin}-{slot.LevelMax}");
-                    }
-                }
-
-                // Process 7-Star Raid encounters from "a crystal cavern"
-                var cavernLocationId = (int)EncounterMight9.Location; // Location ID for "a crystal cavern"
-                var cavernLocationName = gameStrings.GetLocationName(false, (ushort)cavernLocationId, 9, 9, GameVersion.SV);
-                if (string.IsNullOrEmpty(cavernLocationName))
-                    cavernLocationName = "A Crystal Cavern";
-
-                foreach (var encounter in Encounters9.Might)
-                {
-                    var speciesIndex = encounter.Species;
-                    var form = encounter.Form;
-
-                    var personalInfo = pt[speciesIndex];
-                    if (personalInfo is null || !personalInfo.IsPresentInGame)
-                    {
-                        errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in SV. Skipping.");
-                        continue;
-                    }
-
-                    var speciesName = gameStrings.specieslist[speciesIndex];
-                    if (string.IsNullOrEmpty(speciesName))
-                    {
-                        errorLogger.WriteLine($"[{DateTime.Now}] Empty species name for index {speciesIndex}. Skipping.");
-                        continue;
-                    }
-
-                    string dexNumber = speciesIndex.ToString();
-                    if (form > 0)
-                        dexNumber += $"-{form}";
-
-                    if (!encounterData.ContainsKey(dexNumber))
-                        encounterData[dexNumber] = new List<EncounterInfo>();
-
-                    encounterData[dexNumber].Add(new EncounterInfo
-                    {
-                        SpeciesName = speciesName,
-                        SpeciesIndex = speciesIndex,
-                        Form = form,
-                        LocationName = cavernLocationName,
-                        LocationId = cavernLocationId,
-                        MinLevel = encounter.Level,
-                        MaxLevel = encounter.Level,
-                        EncounterType = "7-Star Raid"
-                    });
-
-                    errorLogger.WriteLine($"[{DateTime.Now}] Processed 7-Star Raid encounter: {speciesName} (Dex: {dexNumber}) at {cavernLocationName} (ID: {cavernLocationId}), Level {encounter.Level}");
-                }
+                // Process 7-Star Raid encounters
+                ProcessSevenStarRaids(encounterData, gameStrings, pt, errorLogger);
 
                 // Process static encounters for both versions
-                ProcessStaticEncounters(Encounters9.Encounter_SV, "Both", encounterData, gameStrings, errorLogger);
-                ProcessStaticEncounters(Encounters9.StaticSL, "Scarlet", encounterData, gameStrings, errorLogger);
-                ProcessStaticEncounters(Encounters9.StaticVL, "Violet", encounterData, gameStrings, errorLogger);
+                ProcessStaticEncounters(Encounters9.Encounter_SV, "Both", encounterData, gameStrings, pt, errorLogger);
+                ProcessStaticEncounters(Encounters9.StaticSL, "Scarlet", encounterData, gameStrings, pt, errorLogger);
+                ProcessStaticEncounters(Encounters9.StaticVL, "Violet", encounterData, gameStrings, pt, errorLogger);
+
+                // Process fixed encounters
+                ProcessFixedEncounters(encounterData, gameStrings, pt, errorLogger);
+
+                // Process Tera Raid encounters
+                ProcessTeraRaidEncounters(encounterData, gameStrings, pt, errorLogger);
+
+                // Process distribution encounters
+                ProcessDistributionEncounters(encounterData, gameStrings, pt, errorLogger);
+
+                // Process outbreak encounters
+                ProcessOutbreakEncounters(encounterData, gameStrings, pt, errorLogger);
 
                 var jsonOptions = new JsonSerializerOptions
                 {
@@ -148,58 +70,139 @@ namespace PKHeX.Core.Encounters
             }
         }
 
-        private static void ProcessStaticEncounters(EncounterStatic9[] encounters, string versionName, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
+        private static void ProcessRegularEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
         {
-            var pt = PersonalTable.SV; // Access the PersonalTable9SV instance
+            foreach (var area in Encounters9.Slots)
+            {
+                var locationId = area.Location;
+                var locationName = gameStrings.GetLocationName(false, (ushort)locationId, 9, 9, GameVersion.SV);
+                if (string.IsNullOrEmpty(locationName))
+                    locationName = $"Unknown Location {locationId}";
+
+                foreach (var slot in area.Slots)
+                {
+                    AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, slot.Species, slot.Form, locationName, locationId, slot.LevelMin, slot.LevelMax, "Wild", false, false, null, "Both", SizeType9.RANDOM);
+                }
+            }
+        }
+
+        private static void ProcessSevenStarRaids(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
+        {
+            var cavernLocationId = (int)EncounterMight9.Location;
+            var cavernLocationName = gameStrings.GetLocationName(false, (ushort)cavernLocationId, 9, 9, GameVersion.SV);
+            if (string.IsNullOrEmpty(cavernLocationName))
+                cavernLocationName = "A Crystal Cavern";
+
+            foreach (var encounter in Encounters9.Might)
+            {
+                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, cavernLocationName, cavernLocationId, encounter.Level, encounter.Level, "7-Star Raid", false, false, null, "Both", SizeType9.VALUE, 128);
+            }
+        }
+
+        private static void ProcessStaticEncounters(EncounterStatic9[] encounters, string versionName, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
+        {
             foreach (var encounter in encounters)
             {
-                var speciesIndex = encounter.Species;
-                var form = encounter.Form;
-
-                var personalInfo = pt[speciesIndex];
-                if (personalInfo is null || !personalInfo.IsPresentInGame)
-                {
-                    errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in SV. Skipping.");
-                    continue;
-                }
-
-                var speciesName = gameStrings.specieslist[speciesIndex];
-                if (string.IsNullOrEmpty(speciesName))
-                {
-                    errorLogger.WriteLine($"[{DateTime.Now}] Empty species name for index {speciesIndex}. Skipping.");
-                    continue;
-                }
-
                 var locationId = encounter.Location;
                 var locationName = gameStrings.GetLocationName(false, (ushort)locationId, 9, 9, GameVersion.SV);
                 if (string.IsNullOrEmpty(locationName))
                     locationName = $"Unknown Location {locationId}";
 
-                string dexNumber = speciesIndex.ToString();
-                if (form > 0)
-                    dexNumber += $"-{form}";
-
-                if (!encounterData.ContainsKey(dexNumber))
-                    encounterData[dexNumber] = new List<EncounterInfo>();
-
-                encounterData[dexNumber].Add(new EncounterInfo
-                {
-                    SpeciesName = speciesName,
-                    SpeciesIndex = speciesIndex,
-                    Form = form,
-                    LocationName = locationName,
-                    LocationId = locationId,
-                    MinLevel = encounter.Level,
-                    MaxLevel = encounter.Level,
-                    EncounterType = "Static",
-                    IsShinyLocked = encounter.Shiny == Shiny.Never,
-                    IsGift = false,
-                    FixedBall = encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : null,
-                    EncounterVersion = versionName
-                });
-
-                errorLogger.WriteLine($"[{DateTime.Now}] Processed static encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {locationId}), Level {encounter.Level}");
+                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, locationId, encounter.Level, encounter.Level, "Static", encounter.Shiny == Shiny.Never, false, encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : null, versionName);
             }
+        }
+
+        private static void ProcessFixedEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
+        {
+            foreach (var encounter in EncounterFixed9.GetArray(File.ReadAllBytes("encounter_fixed_paldea.pkl")))
+            {
+                var locationName = gameStrings.GetLocationName(false, (ushort)encounter.Location, 9, 9, GameVersion.SV);
+                if (string.IsNullOrEmpty(locationName))
+                    locationName = $"Unknown Location {encounter.Location}";
+
+                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.Level, encounter.Level, "Fixed", false, false, null, "Both");
+            }
+        }
+
+        private static void ProcessDistributionEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
+        {
+            foreach (var encounter in EncounterDist9.GetArray(File.ReadAllBytes("encounter_dist_paldea.pkl")))
+            {
+                var locationName = gameStrings.GetLocationName(false, (ushort)EncounterDist9.Location, 9, 9, GameVersion.SV);
+                if (string.IsNullOrEmpty(locationName))
+                    locationName = "Distribution Raid Den";
+
+                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, EncounterDist9.Location, encounter.Level, encounter.Level, $"Distribution Raid {encounter.Stars}★", encounter.Shiny == Shiny.Never, false, null, "Both");
+            }
+        }
+
+        private static void ProcessOutbreakEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
+        {
+            foreach (var encounter in EncounterOutbreak9.GetArray(File.ReadAllBytes("encounter_outbreak_paldea.pkl")))
+            {
+                var locationName = gameStrings.GetLocationName(false, encounter.Location, 9, 9, GameVersion.SV);
+                if (string.IsNullOrEmpty(locationName))
+                    locationName = $"Unknown Location {encounter.Location}";
+
+                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.LevelMin, encounter.LevelMax, "Outbreak", !encounter.IsShiny, false, null, "Both");
+            }
+        }
+
+        private static void ProcessTeraRaidEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
+        {
+            foreach (var encounter in EncounterTera9.GetArray(File.ReadAllBytes("encounter_gem_paldea.pkl"), TeraRaidMapParent.Paldea))
+            {
+                var locationName = gameStrings.GetLocationName(false, (ushort)EncounterTera9.Location, 9, 9, GameVersion.SV);
+                if (string.IsNullOrEmpty(locationName))
+                    locationName = "Tera Raid Den";
+
+                // Use SizeType9.RANDOM as default for Tera Raid encounters
+                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, EncounterTera9.Location, encounter.Level, encounter.Level, $"Tera Raid {encounter.Stars}★", encounter.Shiny == Shiny.Never, false, null, encounter.IsAvailableHostScarlet && encounter.IsAvailableHostViolet ? "Both" : (encounter.IsAvailableHostScarlet ? "Scarlet" : "Violet"), SizeType9.RANDOM);
+            }
+        }
+
+        private static void AddEncounterInfo(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger, ushort speciesIndex, byte form, string locationName, int locationId, int minLevel, int maxLevel, string encounterType, bool isShinyLocked = false, bool isGift = false, string fixedBall = null, string encounterVersion = "Both", SizeType9 sizeType = SizeType9.RANDOM, byte sizeValue = 0)
+        {
+            var personalInfo = pt[speciesIndex, form];
+            if (personalInfo is null || !personalInfo.IsPresentInGame)
+            {
+                errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} form {form} not present in SV. Skipping.");
+                return;
+            }
+
+            var speciesName = gameStrings.specieslist[speciesIndex];
+            if (string.IsNullOrEmpty(speciesName))
+            {
+                errorLogger.WriteLine($"[{DateTime.Now}] Empty species name for index {speciesIndex}. Skipping.");
+                return;
+            }
+
+            string dexNumber = speciesIndex.ToString();
+            if (form > 0)
+                dexNumber += $"-{form}";
+
+            if (!encounterData.ContainsKey(dexNumber))
+                encounterData[dexNumber] = new List<EncounterInfo>();
+
+            encounterData[dexNumber].Add(new EncounterInfo
+            {
+                SpeciesName = speciesName,
+                SpeciesIndex = speciesIndex,
+                Form = form,
+                LocationName = locationName,
+                LocationId = locationId,
+                MinLevel = minLevel,
+                MaxLevel = maxLevel,
+                EncounterType = encounterType,
+                IsShinyLocked = isShinyLocked,
+                IsGift = isGift,
+                FixedBall = fixedBall,
+                EncounterVersion = encounterVersion,
+                SizeType = sizeType,
+                SizeValue = sizeValue
+            });
+
+            errorLogger.WriteLine($"[{DateTime.Now}] Processed encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {locationId}), Levels {minLevel}-{maxLevel}, Type: {encounterType}, Size: {sizeType} {(sizeType == SizeType9.VALUE ? $"(Value: {sizeValue})" : "")}");
         }
 
         private class EncounterInfo
@@ -216,6 +219,8 @@ namespace PKHeX.Core.Encounters
             public bool IsGift { get; set; }
             public string FixedBall { get; set; }
             public string EncounterVersion { get; set; } // "Scarlet", "Violet", or "Both"
+            public SizeType9 SizeType { get; set; }
+            public byte SizeValue { get; set; }
         }
     }
 }

@@ -1500,4 +1500,112 @@ public partial class Main : Form
             MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
+
+    private void sWSHMetLocationsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "swsh_encounters.json");
+            string errorLogPath = Path.Combine(executableDirectory, "swsh_encounters_error_log.txt");
+
+            // Call the method to generate the encounters JSON
+            EncounterLocationsSWSH.GenerateEncounterDataJSON(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"Sword/Shield encounters JSON generated successfully at:\n{outputPath}", "JSON Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate JSON file. Please check the error log at:\n{errorLogPath}", "JSON Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void lAMetLocationsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "la_encounters.json");
+            string errorLogPath = Path.Combine(executableDirectory, "la_encounters_error_log.txt");
+
+            // Call the method to generate the encounters JSON
+            EncounterLocationsLA.GenerateEncounterDataJSON(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"Legends Arceus encounters JSON generated successfully at:\n{outputPath}", "JSON Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate JSON file. Please check the error log at:\n{errorLogPath}", "JSON Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void bDSPMetLocationsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "bdsp_encounters.json");
+            string errorLogPath = Path.Combine(executableDirectory, "bdsp_encounters_error_log.txt");
+
+            // Call the method to generate the encounters JSON for BDSP
+            EncounterDataBDSP.GenerateEncounterDataJSON(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"BDSP encounters JSON generated successfully at:\n{outputPath}", "JSON Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate JSON file. Please check the error log at:\n{errorLogPath}", "JSON Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void lGPEMetLocationsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string executablePath = Application.ExecutablePath;
+            string executableDirectory = Path.GetDirectoryName(executablePath);
+            string outputPath = Path.Combine(executableDirectory, "lgpe_encounters.json");
+            string errorLogPath = Path.Combine(executableDirectory, "lgpe_encounters_error_log.txt");
+
+            // Call the method to generate the encounters JSON
+            EncounterLocationsLGPE.GenerateEncounterDataJSON(outputPath, errorLogPath);
+
+            if (File.Exists(outputPath))
+            {
+                MessageBox.Show($"Let's Go Pikachu/Eevee encounters JSON generated successfully at:\n{outputPath}", "JSON Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Failed to generate JSON file. Please check the error log at:\n{errorLogPath}", "JSON Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 }
