@@ -150,14 +150,48 @@ namespace PKHeX.Core.Encounters
 
         private static void ProcessTeraRaidEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
         {
-            foreach (var encounter in EncounterTera9.GetArray(File.ReadAllBytes("encounter_gem_paldea.pkl"), TeraRaidMapParent.Paldea))
-            {
-                var locationName = gameStrings.GetLocationName(false, (ushort)EncounterTera9.Location, 9, 9, GameVersion.SV);
-                if (string.IsNullOrEmpty(locationName))
-                    locationName = "Tera Raid Den";
+            ProcessRegionTeraRaidEncounters("encounter_gem_paldea.pkl", TeraRaidMapParent.Paldea, encounterData, gameStrings, pt, errorLogger);
+            ProcessRegionTeraRaidEncounters("encounter_gem_kitakami.pkl", TeraRaidMapParent.Kitakami, encounterData, gameStrings, pt, errorLogger);
+            ProcessRegionTeraRaidEncounters("encounter_gem_blueberry.pkl", TeraRaidMapParent.Blueberry, encounterData, gameStrings, pt, errorLogger);
+        }
 
-                // Use SizeType9.RANDOM as default for Tera Raid encounters
-                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, EncounterTera9.Location, encounter.Level, encounter.Level, $"Tera Raid {encounter.Stars}★", encounter.Shiny == Shiny.Never, false, null, encounter.IsAvailableHostScarlet && encounter.IsAvailableHostViolet ? "Both" : (encounter.IsAvailableHostScarlet ? "Scarlet" : "Violet"), SizeType9.RANDOM);
+        private static void ProcessRegionTeraRaidEncounters(string fileName, TeraRaidMapParent region, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
+        {
+            try
+            {
+                foreach (var encounter in EncounterTera9.GetArray(File.ReadAllBytes(fileName), region))
+                {
+                    var locationName = gameStrings.GetLocationName(false, (ushort)EncounterTera9.Location, 9, 9, GameVersion.SV);
+                    if (string.IsNullOrEmpty(locationName))
+                        locationName = "Tera Raid Den";
+
+                    AddEncounterInfo(
+                        encounterData,
+                        gameStrings,
+                        pt,
+                        errorLogger,
+                        encounter.Species,
+                        encounter.Form,
+                        locationName,
+                        EncounterTera9.Location,
+                        encounter.Level,
+                        encounter.Level,
+                        $"Tera Raid {encounter.Stars}★",
+                        encounter.Shiny == Shiny.Never,
+                        false,
+                        null,
+                        encounter.IsAvailableHostScarlet && encounter.IsAvailableHostViolet ? "Both" : (encounter.IsAvailableHostScarlet ? "Scarlet" : "Violet"),
+                        SizeType9.RANDOM
+                    );
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                errorLogger.WriteLine($"[{DateTime.Now}] Warning: File not found: {fileName}. Skipping this region's Tera Raid encounters.");
+            }
+            catch (Exception ex)
+            {
+                errorLogger.WriteLine($"[{DateTime.Now}] Error processing {fileName}: {ex.Message}");
             }
         }
 
