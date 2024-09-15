@@ -88,14 +88,45 @@ namespace PKHeX.Core.Encounters
 
         private static void ProcessSevenStarRaids(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
         {
-            var cavernLocationId = (int)EncounterMight9.Location;
-            var cavernLocationName = gameStrings.GetLocationName(false, (ushort)cavernLocationId, 9, 9, GameVersion.SV);
-            if (string.IsNullOrEmpty(cavernLocationName))
-                cavernLocationName = "A Crystal Cavern";
-
-            foreach (var encounter in Encounters9.Might)
+            try
             {
-                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, cavernLocationName, cavernLocationId, encounter.Level, encounter.Level, "7-Star Raid", false, false, null, "Both", SizeType9.VALUE, 128);
+                byte[] data = File.ReadAllBytes("encounter_might_paldea.pkl");
+                var encounters = EncounterMight9.GetArray(data);
+
+                foreach (var encounter in encounters)
+                {
+                    var locationName = gameStrings.GetLocationName(false, (ushort)EncounterMight9.Location, 9, 9, GameVersion.SV);
+                    if (string.IsNullOrEmpty(locationName))
+                        locationName = "A Crystal Cavern";
+
+                    AddEncounterInfo(
+                        encounterData,
+                        gameStrings,
+                        pt,
+                        errorLogger,
+                        encounter.Species,
+                        encounter.Form,
+                        locationName,
+                        EncounterMight9.Location,
+                        encounter.Level,
+                        encounter.Level,
+                        "7-Star Raid",
+                        encounter.Shiny == Shiny.Never,
+                        false,
+                        null,
+                        "Both",
+                        encounter.ScaleType,
+                        encounter.Scale
+                    );
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                errorLogger.WriteLine($"[{DateTime.Now}] Warning: File not found: encounter_might_paldea.pkl. Skipping 7-Star Raid encounters.");
+            }
+            catch (Exception ex)
+            {
+                errorLogger.WriteLine($"[{DateTime.Now}] Error processing encounter_might_paldea.pkl: {ex.Message}");
             }
         }
 
