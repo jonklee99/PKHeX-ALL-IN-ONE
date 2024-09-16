@@ -15,7 +15,7 @@ public sealed record EncounterStatic8b(GameVersion Version)
     ushort ILocation.Location => Location;
     public bool IsEgg => EggLocation != None;
     private const ushort None = Locations.Default8bNone;
-    public byte Form => 0;
+    public byte Form { get; init; }
     public bool IsShiny => Shiny == Shiny.Always;
     public byte LevelMin => Level;
     public byte LevelMax => Level;
