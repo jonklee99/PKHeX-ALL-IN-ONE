@@ -175,7 +175,7 @@ namespace PKHeX.Core.Encounters
                 if (string.IsNullOrEmpty(locationName))
                     locationName = $"Unknown Location {encounter.Location}";
 
-                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.LevelMin, encounter.LevelMax, "Outbreak", !encounter.IsShiny, false, null, "Both");
+                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.LevelMin, encounter.LevelMax, "Outbreak", false, false, null, "Both");
             }
         }
 
