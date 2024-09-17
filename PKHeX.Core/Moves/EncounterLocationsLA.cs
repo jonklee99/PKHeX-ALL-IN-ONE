@@ -18,19 +18,10 @@ namespace PKHeX.Core.Encounters
                 var gameStrings = GameInfo.GetStrings("en");
                 errorLogger.WriteLine($"[{DateTime.Now}] Game strings loaded.");
 
-                var pt = PersonalTable.LA;
-                errorLogger.WriteLine($"[{DateTime.Now}] PersonalTable for LA loaded.");
-
                 var encounterData = new Dictionary<string, List<EncounterInfo>>();
 
                 // Process regular encounter slots
-                foreach (var area in Encounters8a.SlotsLA)
-                {
-                    foreach (var slot in area.Slots)
-                    {
-                        ProcessEncounterSlot(slot, area, gameStrings, pt, encounterData, errorLogger);
-                    }
-                }
+                ProcessEncounterSlots(Encounters8a.SlotsLA, encounterData, gameStrings, errorLogger);
 
                 // Process static encounters
                 ProcessStaticEncounters(Encounters8a.StaticLA, encounterData, gameStrings, errorLogger);
@@ -58,22 +49,41 @@ namespace PKHeX.Core.Encounters
             }
         }
 
-        private static void ProcessEncounterSlot(EncounterSlot8a slot, EncounterArea8a area, GameStrings gameStrings, PersonalTable8LA pt, Dictionary<string, List<EncounterInfo>> encounterData, StreamWriter errorLogger)
+        private static void ProcessEncounterSlots(EncounterArea8a[] areas, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
         {
-            var speciesIndex = slot.Species;
-            var form = slot.Form;
-
-            var personalInfo = pt.GetFormEntry(speciesIndex, form);
-            if (personalInfo is null || !personalInfo.IsPresentInGame)
+            foreach (var area in areas)
             {
-                errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in LA. Skipping.");
-                return;
+                foreach (var slot in area.Slots)
+                {
+                    AddEncounterInfo(slot, area.Location, area.Type.ToString(), encounterData, gameStrings, errorLogger);
+                }
             }
+        }
+
+        private static void ProcessStaticEncounters(EncounterStatic8a[] encounters, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
+        {
+            foreach (var encounter in encounters)
+            {
+                AddEncounterInfo(encounter, encounter.Location, "Static", encounterData, gameStrings, errorLogger);
+            }
+        }
+
+        private static void AddEncounterInfo(ISpeciesForm encounter, ushort locationId, string encounterType, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
+        {
+            var speciesIndex = encounter.Species;
+            var form = encounter.Form;
 
             var speciesName = gameStrings.specieslist[speciesIndex];
             if (string.IsNullOrEmpty(speciesName))
             {
                 errorLogger.WriteLine($"[{DateTime.Now}] Empty species name for index {speciesIndex}. Skipping.");
+                return;
+            }
+
+            var locationName = gameStrings.GetLocationName(false, (byte)(locationId & 0xFF), 8, 8, GameVersion.PLA);
+            if (string.IsNullOrEmpty(locationName))
+            {
+                errorLogger.WriteLine($"[{DateTime.Now}] Unknown location ID: {locationId} for species {speciesName} (Index: {speciesIndex}, Form: {form}). Skipping this encounter.");
                 return;
             }
 
@@ -84,73 +94,39 @@ namespace PKHeX.Core.Encounters
             if (!encounterData.ContainsKey(dexNumber))
                 encounterData[dexNumber] = new List<EncounterInfo>();
 
-            var locationName = gameStrings.GetLocationName(false, area.Location, 8, 8, GameVersion.PLA);
-            if (string.IsNullOrEmpty(locationName))
-                locationName = $"Unknown Location {area.Location}";
-
-            encounterData[dexNumber].Add(new EncounterInfo
+            var info = new EncounterInfo
             {
                 SpeciesName = speciesName,
                 SpeciesIndex = speciesIndex,
                 Form = form,
                 LocationName = locationName,
-                LocationId = area.Location,
-                MinLevel = slot.LevelMin,
-                MaxLevel = slot.LevelMax,
-                EncounterType = area.Type.ToString(),
-                IsAlpha = slot.IsAlpha,
-                Gender = slot.Gender.ToString(),
-                FlawlessIVCount = slot.FlawlessIVCount
-            });
+                LocationId = locationId,
+                EncounterType = encounterType,
+            };
 
-            errorLogger.WriteLine($"[{DateTime.Now}] Processed encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {area.Location}), Levels {slot.LevelMin}-{slot.LevelMax}");
-        }
-
-        private static void ProcessStaticEncounters(EncounterStatic8a[] encounters, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
-        {
-            foreach (var encounter in encounters)
+            if (encounter is EncounterSlot8a slot)
             {
-                var speciesIndex = encounter.Species;
-                var form = encounter.Form;
-
-                var speciesName = gameStrings.specieslist[speciesIndex];
-                if (string.IsNullOrEmpty(speciesName))
-                {
-                    errorLogger.WriteLine($"[{DateTime.Now}] Empty species name for index {speciesIndex}. Skipping.");
-                    continue;
-                }
-
-                string dexNumber = speciesIndex.ToString();
-                if (form > 0)
-                    dexNumber += $"-{form}";
-
-                if (!encounterData.ContainsKey(dexNumber))
-                    encounterData[dexNumber] = new List<EncounterInfo>();
-
-                var locationName = gameStrings.GetLocationName(false, encounter.Location, 8, 8, GameVersion.PLA);
-                if (string.IsNullOrEmpty(locationName))
-                    locationName = $"Unknown Location {encounter.Location}";
-
-                encounterData[dexNumber].Add(new EncounterInfo
-                {
-                    SpeciesName = speciesName,
-                    SpeciesIndex = speciesIndex,
-                    Form = form,
-                    LocationName = locationName,
-                    LocationId = encounter.Location,
-                    MinLevel = encounter.LevelMin,
-                    MaxLevel = encounter.LevelMax,
-                    EncounterType = "Static",
-                    IsAlpha = encounter.IsAlpha,
-                    Gender = ((Gender)encounter.Gender).ToString(),
-                    FlawlessIVCount = encounter.FlawlessIVCount,
-                    IsShiny = encounter.Shiny != Shiny.Never,
-                    FixedBall = encounter.FixedBall.ToString(),
-                    FatefulEncounter = encounter.FatefulEncounter
-                });
-
-                errorLogger.WriteLine($"[{DateTime.Now}] Processed static encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {encounter.Location}), Levels {encounter.LevelMin}-{encounter.LevelMax}");
+                info.MinLevel = slot.LevelMin;
+                info.MaxLevel = slot.LevelMax;
+                info.IsAlpha = slot.IsAlpha;
+                info.Gender = slot.Gender.ToString();
+                info.FlawlessIVCount = slot.FlawlessIVCount;
             }
+            else if (encounter is EncounterStatic8a static8a)
+            {
+                info.MinLevel = static8a.LevelMin;
+                info.MaxLevel = static8a.LevelMax;
+                info.IsAlpha = static8a.IsAlpha;
+                info.Gender = ((Gender)static8a.Gender).ToString();
+                info.FlawlessIVCount = static8a.FlawlessIVCount;
+                info.IsShiny = static8a.Shiny != Shiny.Never;
+                info.FixedBall = static8a.FixedBall.ToString();
+                info.FatefulEncounter = static8a.FatefulEncounter;
+            }
+
+            encounterData[dexNumber].Add(info);
+
+            errorLogger.WriteLine($"[{DateTime.Now}] Processed encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {locationId}), Type: {encounterType}");
         }
 
         private class EncounterInfo

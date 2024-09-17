@@ -88,45 +88,31 @@ namespace PKHeX.Core.Encounters
 
         private static void ProcessSevenStarRaids(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
         {
-            try
+            foreach (var encounter in Encounters9.Might)
             {
-                byte[] data = File.ReadAllBytes("encounter_might_paldea.pkl");
-                var encounters = EncounterMight9.GetArray(data);
+                var locationName = gameStrings.GetLocationName(false, (ushort)EncounterMight9.Location, 9, 9, GameVersion.SV);
+                if (string.IsNullOrEmpty(locationName))
+                    locationName = "A Crystal Cavern";
 
-                foreach (var encounter in encounters)
-                {
-                    var locationName = gameStrings.GetLocationName(false, (ushort)EncounterMight9.Location, 9, 9, GameVersion.SV);
-                    if (string.IsNullOrEmpty(locationName))
-                        locationName = "A Crystal Cavern";
-
-                    AddEncounterInfo(
-                        encounterData,
-                        gameStrings,
-                        pt,
-                        errorLogger,
-                        encounter.Species,
-                        encounter.Form,
-                        locationName,
-                        EncounterMight9.Location,
-                        encounter.Level,
-                        encounter.Level,
-                        "7-Star Raid",
-                        encounter.Shiny == Shiny.Never,
-                        false,
-                        null,
-                        "Both",
-                        encounter.ScaleType,
-                        encounter.Scale
-                    );
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                errorLogger.WriteLine($"[{DateTime.Now}] Warning: File not found: encounter_might_paldea.pkl. Skipping 7-Star Raid encounters.");
-            }
-            catch (Exception ex)
-            {
-                errorLogger.WriteLine($"[{DateTime.Now}] Error processing encounter_might_paldea.pkl: {ex.Message}");
+                AddEncounterInfo(
+                    encounterData,
+                    gameStrings,
+                    pt,
+                    errorLogger,
+                    encounter.Species,
+                    encounter.Form,
+                    locationName,
+                    EncounterMight9.Location,
+                    encounter.Level,
+                    encounter.Level,
+                    "7-Star Raid",
+                    encounter.Shiny == Shiny.Never,
+                    false,
+                    null,
+                    "Both",
+                    encounter.ScaleType,
+                    encounter.Scale
+                );
             }
         }
 
@@ -145,7 +131,7 @@ namespace PKHeX.Core.Encounters
 
         private static void ProcessFixedEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
         {
-            foreach (var encounter in EncounterFixed9.GetArray(File.ReadAllBytes("encounter_fixed_paldea.pkl")))
+            foreach (var encounter in Encounters9.Fixed)
             {
                 var locationName = gameStrings.GetLocationName(false, (ushort)encounter.Location, 9, 9, GameVersion.SV);
                 if (string.IsNullOrEmpty(locationName))
@@ -155,9 +141,45 @@ namespace PKHeX.Core.Encounters
             }
         }
 
+        private static void ProcessTeraRaidEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
+        {
+            ProcessTeraRaidEncountersForGroup(Encounters9.TeraBase, encounterData, gameStrings, pt, errorLogger, "Paldea");
+            ProcessTeraRaidEncountersForGroup(Encounters9.TeraDLC1, encounterData, gameStrings, pt, errorLogger, "Kitakami");
+            ProcessTeraRaidEncountersForGroup(Encounters9.TeraDLC2, encounterData, gameStrings, pt, errorLogger, "Blueberry");
+        }
+
+        private static void ProcessTeraRaidEncountersForGroup(EncounterTera9[] encounters, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger, string groupName)
+        {
+            foreach (var encounter in encounters)
+            {
+                var locationName = gameStrings.GetLocationName(false, (ushort)EncounterTera9.Location, 9, 9, GameVersion.SV);
+                if (string.IsNullOrEmpty(locationName))
+                    locationName = "Tera Raid Den";
+
+                AddEncounterInfo(
+                    encounterData,
+                    gameStrings,
+                    pt,
+                    errorLogger,
+                    encounter.Species,
+                    encounter.Form,
+                    locationName,
+                    EncounterTera9.Location,
+                    encounter.Level,
+                    encounter.Level,
+                    $"{encounter.Stars}★ Tera Raid {groupName}",
+                    encounter.Shiny == Shiny.Never,
+                    false,
+                    null,
+                    encounter.IsAvailableHostScarlet && encounter.IsAvailableHostViolet ? "Both" : (encounter.IsAvailableHostScarlet ? "Scarlet" : "Violet"),
+                    SizeType9.RANDOM
+                );
+            }
+        }
+
         private static void ProcessDistributionEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
         {
-            foreach (var encounter in EncounterDist9.GetArray(File.ReadAllBytes("encounter_dist_paldea.pkl")))
+            foreach (var encounter in Encounters9.Dist)
             {
                 var locationName = gameStrings.GetLocationName(false, (ushort)EncounterDist9.Location, 9, 9, GameVersion.SV);
                 if (string.IsNullOrEmpty(locationName))
@@ -169,60 +191,13 @@ namespace PKHeX.Core.Encounters
 
         private static void ProcessOutbreakEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
         {
-            foreach (var encounter in EncounterOutbreak9.GetArray(File.ReadAllBytes("encounter_outbreak_paldea.pkl")))
+            foreach (var encounter in Encounters9.Outbreak)
             {
                 var locationName = gameStrings.GetLocationName(false, encounter.Location, 9, 9, GameVersion.SV);
                 if (string.IsNullOrEmpty(locationName))
                     locationName = $"Unknown Location {encounter.Location}";
 
                 AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.LevelMin, encounter.LevelMax, "Outbreak", false, false, null, "Both");
-            }
-        }
-
-        private static void ProcessTeraRaidEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
-        {
-            ProcessRegionTeraRaidEncounters("encounter_gem_paldea.pkl", TeraRaidMapParent.Paldea, encounterData, gameStrings, pt, errorLogger);
-            ProcessRegionTeraRaidEncounters("encounter_gem_kitakami.pkl", TeraRaidMapParent.Kitakami, encounterData, gameStrings, pt, errorLogger);
-            ProcessRegionTeraRaidEncounters("encounter_gem_blueberry.pkl", TeraRaidMapParent.Blueberry, encounterData, gameStrings, pt, errorLogger);
-        }
-
-        private static void ProcessRegionTeraRaidEncounters(string fileName, TeraRaidMapParent region, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
-        {
-            try
-            {
-                foreach (var encounter in EncounterTera9.GetArray(File.ReadAllBytes(fileName), region))
-                {
-                    var locationName = gameStrings.GetLocationName(false, (ushort)EncounterTera9.Location, 9, 9, GameVersion.SV);
-                    if (string.IsNullOrEmpty(locationName))
-                        locationName = "Tera Raid Den";
-
-                    AddEncounterInfo(
-                        encounterData,
-                        gameStrings,
-                        pt,
-                        errorLogger,
-                        encounter.Species,
-                        encounter.Form,
-                        locationName,
-                        EncounterTera9.Location,
-                        encounter.Level,
-                        encounter.Level,
-                        $"Tera Raid {encounter.Stars}★",
-                        encounter.Shiny == Shiny.Never,
-                        false,
-                        null,
-                        encounter.IsAvailableHostScarlet && encounter.IsAvailableHostViolet ? "Both" : (encounter.IsAvailableHostScarlet ? "Scarlet" : "Violet"),
-                        SizeType9.RANDOM
-                    );
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                errorLogger.WriteLine($"[{DateTime.Now}] Warning: File not found: {fileName}. Skipping this region's Tera Raid encounters.");
-            }
-            catch (Exception ex)
-            {
-                errorLogger.WriteLine($"[{DateTime.Now}] Error processing {fileName}: {ex.Message}");
             }
         }
 
