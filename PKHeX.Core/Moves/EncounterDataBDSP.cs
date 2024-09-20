@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 
-namespace PKHeX.Core.Encounters
+namespace PKHeX.Core
 {
     public static class EncounterDataBDSP
     {
@@ -28,9 +28,6 @@ namespace PKHeX.Core.Encounters
 
                 // Process static encounters
                 ProcessStaticEncounters(encounterData, gameStrings, errorLogger);
-
-                // Process pickle files
-                ProcessPickleFiles(encounterData, gameStrings, errorLogger);
 
                 var jsonOptions = new JsonSerializerOptions
                 {
@@ -71,7 +68,7 @@ namespace PKHeX.Core.Encounters
 
         private static void ProcessEncounterArea(EncounterArea8b area, GameVersion version, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
         {
-            var locationName = gameStrings.GetLocationName(false, (ushort)area.Location, 8, 8, GameVersion.BDSP);
+            var locationName = gameStrings.GetLocationName(false, area.Location, 8, 8, GameVersion.BDSP);
             if (string.IsNullOrEmpty(locationName))
                 locationName = $"Unknown Location {area.Location}";
 
@@ -132,7 +129,7 @@ namespace PKHeX.Core.Encounters
                     continue;
                 }
 
-                var locationName = gameStrings.GetLocationName(false, (ushort)encounter.Location, 8, 8, GameVersion.BDSP);
+                var locationName = gameStrings.GetLocationName(false, encounter.Location, 8, 8, GameVersion.BDSP);
                 if (string.IsNullOrEmpty(locationName))
                     locationName = $"Unknown Location {encounter.Location}";
 
@@ -161,91 +158,6 @@ namespace PKHeX.Core.Encounters
 
                 errorLogger.WriteLine($"[{DateTime.Now}] Processed static encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {encounter.Location}), Level {encounter.Level}");
             }
-        }
-
-        private static void ProcessPickleFiles(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
-        {
-            ProcessPickleFile("encounter_bd.pkl", encounterData, gameStrings, errorLogger, "Wild", GameVersion.BD);
-            ProcessPickleFile("encounter_sp.pkl", encounterData, gameStrings, errorLogger, "Wild", GameVersion.SP);
-            ProcessPickleFile("encounter_bd_underground.pkl", encounterData, gameStrings, errorLogger, "Underground", GameVersion.BD);
-            ProcessPickleFile("encounter_sp_underground.pkl", encounterData, gameStrings, errorLogger, "Underground", GameVersion.SP);
-        }
-
-        private static void ProcessPickleFile(string fileName, Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger, string encounterType, GameVersion version)
-        {
-            try
-            {
-                byte[] data = File.ReadAllBytes(fileName);
-                var pt = PersonalTable.BDSP;
-                for (int i = 0; i < data.Length; i += 16) // Assuming each entry is 16 bytes
-                {
-                    var encounter = ReadEncounter(data.AsSpan(i, 16), version);
-                    var speciesIndex = encounter.Species;
-                    var form = encounter.Form;
-                    var personalInfo = pt[speciesIndex];
-                    if (personalInfo is null || !personalInfo.IsPresentInGame)
-                    {
-                        errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in BDSP. Skipping.");
-                        continue;
-                    }
-                    var speciesName = gameStrings.specieslist[speciesIndex];
-                    if (string.IsNullOrEmpty(speciesName))
-                    {
-                        errorLogger.WriteLine($"[{DateTime.Now}] Empty species name for index {speciesIndex}. Skipping.");
-                        continue;
-                    }
-                    var locationId = encounter.Location;
-                    var locationName = gameStrings.GetLocationName(false, (ushort)locationId, 8, 8, GameVersion.BDSP);
-                    if (string.IsNullOrEmpty(locationName))
-                        locationName = $"Unknown Location {locationId}";
-                    string dexNumber = speciesIndex.ToString();
-                    if (form > 0)
-                        dexNumber += $"-{form}";
-                    if (!encounterData.ContainsKey(dexNumber))
-                        encounterData[dexNumber] = new List<EncounterInfo>();
-                    encounterData[dexNumber].Add(new EncounterInfo
-                    {
-                        SpeciesName = speciesName,
-                        SpeciesIndex = speciesIndex,
-                        Form = form,
-                        LocationName = locationName,
-                        LocationId = locationId,
-                        MinLevel = encounter.Level,
-                        MaxLevel = encounter.Level,
-                        EncounterType = encounterType,
-                        IsShinyLocked = encounter.Shiny == Shiny.Never,
-                        IsGift = encounter.FixedBall != Ball.None,
-                        FixedBall = encounter.FixedBall.ToString(),
-                        Version = encounter.Version.ToString()
-                    });
-                    errorLogger.WriteLine($"[{DateTime.Now}] Processed {encounterType} encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {locationId}), Level {encounter.Level}");
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                errorLogger.WriteLine($"[{DateTime.Now}] Warning: File not found: {fileName}. Skipping these encounters.");
-            }
-            catch (Exception ex)
-            {
-                errorLogger.WriteLine($"[{DateTime.Now}] Error processing {fileName}: {ex.Message}");
-            }
-        }
-
-        private static EncounterStatic8b ReadEncounter(ReadOnlySpan<byte> data, GameVersion version)
-        {
-            return new EncounterStatic8b(version)
-            {
-                Species = BitConverter.ToUInt16(data.Slice(0, 2)),
-                Form = data[2],
-                Level = data[3],
-                Location = BitConverter.ToUInt16(data.Slice(4, 2)),
-                Ability = (AbilityPermission)data[6],
-                Shiny = (Shiny)data[7],
-                FixedBall = (Ball)data[8],
-                FlawlessIVCount = data[9],
-                FatefulEncounter = data[10] != 0,
-                // Assuming the last 5 bytes are reserved or used for other purposes
-            };
         }
 
         private class EncounterInfo
