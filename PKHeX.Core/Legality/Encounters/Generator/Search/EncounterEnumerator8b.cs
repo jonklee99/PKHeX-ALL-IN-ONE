@@ -53,106 +53,113 @@ public record struct EncounterEnumerator8b(PKM Entity, EvoCriteria[] Chain, Game
 
     public bool MoveNext()
     {
-        switch (State)
+        try
         {
-            case YieldState.Start:
-                if (Chain.Length == 0)
-                    break;
+            switch (State)
+            {
+                case YieldState.Start:
+                    if (Chain.Length == 0)
+                        break;
 
-                if (!Entity.FatefulEncounter)
-                    goto case YieldState.Bred;
-                State = YieldState.Event; goto case YieldState.Event;
+                    if (!Entity.FatefulEncounter)
+                        goto case YieldState.Bred;
+                    State = YieldState.Event; goto case YieldState.Event;
 
-            case YieldState.Event:
-                if (TryGetNext(EncounterEvent.MGDB_G8B))
-                    return true;
-                Index = 0; State = YieldState.EventLocal; goto case YieldState.EventLocal;
-            case YieldState.EventLocal:
-                if (TryGetNext(EncounterEvent.EGDB_G8B))
-                    return true;
-                if (Yielded)
-                    break;
-                Index = 0; goto case YieldState.Bred;
+                case YieldState.Event:
+                    if (TryGetNext(EncounterEvent.MGDB_G8B))
+                        return true;
+                    Index = 0; State = YieldState.EventLocal; goto case YieldState.EventLocal;
+                case YieldState.EventLocal:
+                    if (TryGetNext(EncounterEvent.EGDB_G8B))
+                        return true;
+                    if (Yielded)
+                        break;
+                    Index = 0; goto case YieldState.Bred;
 
-            case YieldState.Bred:
-                if (!Locations.IsEggLocationBred8b(Entity.EggLocation))
-                    goto case YieldState.TradeStart;
-                if (!EncounterGenerator8b.TryGetEgg(Chain, Version, out var egg))
-                    goto case YieldState.TradeStart;
-                State = YieldState.BredSplit;
-                return SetCurrent(egg);
-            case YieldState.BredSplit:
-                State = Entity.EggLocation == Locations.Daycare8b ? YieldState.End : YieldState.StartCaptures;
-                if (EncounterGenerator8b.TryGetSplit((EncounterEgg)Current.Encounter, Chain, out egg))
+                case YieldState.Bred:
+                    if (!Locations.IsEggLocationBred8b(Entity.EggLocation))
+                        goto case YieldState.TradeStart;
+                    if (!EncounterGenerator8b.TryGetEgg(Chain, Version, out var egg))
+                        goto case YieldState.TradeStart;
+                    State = YieldState.BredSplit;
                     return SetCurrent(egg);
-                break;
+                case YieldState.BredSplit:
+                    State = Entity.EggLocation == Locations.Daycare8b ? YieldState.End : YieldState.StartCaptures;
+                    if (EncounterGenerator8b.TryGetSplit((EncounterEgg)Current.Encounter, Chain, out egg))
+                        return SetCurrent(egg);
+                    break;
 
-            case YieldState.TradeStart:
-                if (Entity.MetLocation != Locations.LinkTrade6NPC)
-                    goto case YieldState.StartCaptures;
-                State = YieldState.Trade; goto case YieldState.Trade;
-            case YieldState.Trade:
-                if (TryGetNext(Encounters8b.TradeGift_BDSP))
-                { State = YieldState.End; return true; }
-                Index = 0; goto case YieldState.StartCaptures;
+                case YieldState.TradeStart:
+                    if (Entity.MetLocation != Locations.LinkTrade6NPC)
+                        goto case YieldState.StartCaptures;
+                    State = YieldState.Trade; goto case YieldState.Trade;
+                case YieldState.Trade:
+                    if (TryGetNext(Encounters8b.TradeGift_BDSP))
+                    { State = YieldState.End; return true; }
+                    Index = 0; goto case YieldState.StartCaptures;
 
-            case YieldState.StartCaptures:
-                InitializeWildLocationInfo();
-                if (mustBeSlot)
-                    goto case YieldState.SlotStart;
-                goto case YieldState.StaticVersion;
+                case YieldState.StartCaptures:
+                    InitializeWildLocationInfo();
+                    if (mustBeSlot)
+                        goto case YieldState.SlotStart;
+                    goto case YieldState.StaticVersion;
 
-            case YieldState.SlotStart:
-                if (!EncounterStateUtil.CanBeWildEncounter(Entity))
-                    goto case YieldState.SlotEnd;
-                if (Version is GameVersion.BD)
-                { State = YieldState.SlotBD; goto case YieldState.SlotBD; }
-                if (Version is GameVersion.SP)
-                { State = YieldState.SlotSP; goto case YieldState.SlotSP; }
-                throw new ArgumentOutOfRangeException(nameof(Version));
-            case YieldState.SlotBD:
-                if (TryGetNext<EncounterArea8b, EncounterSlot8b>(Encounters8b.SlotsBD))
-                    return true;
-                Index = 0; goto case YieldState.SlotEnd;
-            case YieldState.SlotSP:
-                if (TryGetNext<EncounterArea8b, EncounterSlot8b>(Encounters8b.SlotsSP))
-                    return true;
-                Index = 0; goto case YieldState.SlotEnd;
-            case YieldState.SlotEnd:
-                if (!mustBeSlot)
+                case YieldState.SlotStart:
+                    if (!EncounterStateUtil.CanBeWildEncounter(Entity))
+                        goto case YieldState.SlotEnd;
+                    if (Version is GameVersion.BD)
+                    { State = YieldState.SlotBD; goto case YieldState.SlotBD; }
+                    if (Version is GameVersion.SP)
+                    { State = YieldState.SlotSP; goto case YieldState.SlotSP; }
+                    throw new ArgumentOutOfRangeException(nameof(Version));
+                case YieldState.SlotBD:
+                    if (TryGetNext<EncounterArea8b, EncounterSlot8b>(Encounters8b.SlotsBD))
+                        return true;
+                    Index = 0; goto case YieldState.SlotEnd;
+                case YieldState.SlotSP:
+                    if (TryGetNext<EncounterArea8b, EncounterSlot8b>(Encounters8b.SlotsSP))
+                        return true;
+                    Index = 0; goto case YieldState.SlotEnd;
+                case YieldState.SlotEnd:
+                    if (!mustBeSlot)
+                        goto case YieldState.Fallback; // already checked everything else
+                    goto case YieldState.StaticVersion;
+
+                case YieldState.StaticVersion:
+                    if (Version == GameVersion.BD)
+                    { State = YieldState.StaticVersionBD; goto case YieldState.StaticVersionBD; }
+                    if (Version == GameVersion.SP)
+                    { State = YieldState.StaticVersionSP; goto case YieldState.StaticVersionSP; }
                     goto case YieldState.Fallback; // already checked everything else
-                goto case YieldState.StaticVersion;
 
-            case YieldState.StaticVersion:
-                if (Version == GameVersion.BD)
-                { State = YieldState.StaticVersionBD; goto case YieldState.StaticVersionBD; }
-                if (Version == GameVersion.SP)
-                { State = YieldState.StaticVersionSP; goto case YieldState.StaticVersionSP; }
-                goto case YieldState.Fallback; // already checked everything else
+                case YieldState.StaticVersionBD:
+                    if (TryGetNext(Encounters8b.StaticBD))
+                        return true;
+                    Index = 0; State = YieldState.StaticShared; goto case YieldState.StaticShared;
+                case YieldState.StaticVersionSP:
+                    if (TryGetNext(Encounters8b.StaticSP))
+                        return true;
+                    Index = 0; State = YieldState.StaticShared; goto case YieldState.StaticShared;
 
-            case YieldState.StaticVersionBD:
-                if (TryGetNext(Encounters8b.StaticBD))
-                    return true;
-                Index = 0; State = YieldState.StaticShared; goto case YieldState.StaticShared;
-            case YieldState.StaticVersionSP:
-                if (TryGetNext(Encounters8b.StaticSP))
-                    return true;
-                Index = 0; State = YieldState.StaticShared; goto case YieldState.StaticShared;
+                case YieldState.StaticShared:
+                    if (TryGetNext(Encounters8b.Encounter_BDSP))
+                        return true;
+                    if (mustBeSlot)
+                        goto case YieldState.Fallback; // already checked everything else
+                    Index = 0; goto case YieldState.SlotStart;
 
-            case YieldState.StaticShared:
-                if (TryGetNext(Encounters8b.Encounter_BDSP))
-                    return true;
-                if (mustBeSlot)
-                    goto case YieldState.Fallback; // already checked everything else
-                Index = 0; goto case YieldState.SlotStart;
-
-            case YieldState.Fallback:
-                State = YieldState.End;
-                if (Deferred != null)
-                    return SetCurrent(Deferred, Rating);
-                break;
+                case YieldState.Fallback:
+                    State = YieldState.End;
+                    if (Deferred != null)
+                        return SetCurrent(Deferred, Rating);
+                    break;
+            }
+            return false;
         }
-        return false;
+        catch
+        {
+            return false; // Return false to gracefully end the enumeration
+        }
     }
 
     private void InitializeWildLocationInfo()
