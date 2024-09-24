@@ -58,7 +58,9 @@ namespace PKHeX.Core.Encounters
 
                 foreach (var slot in area.Slots)
                 {
-                    AddEncounterInfo(encounterData, gameStrings, errorLogger, slot.Species, slot.Form, locationName, area.Location, slot.LevelMin, slot.LevelMax, $"Wild {slotType}", false, false, null, "Both");
+                    bool canGigantamax = Gigantamax.CanToggle(slot.Species, slot.Form);
+
+                    AddEncounterInfo(encounterData, gameStrings, errorLogger, slot.Species, slot.Form, locationName, area.Location, slot.LevelMin, slot.LevelMax, $"Wild {slotType}", false, false, null, "Both", canGigantamax);
                 }
             }
         }
@@ -68,8 +70,9 @@ namespace PKHeX.Core.Encounters
             foreach (var encounter in encounters)
             {
                 var locationName = gameStrings.GetLocationName(false, (ushort)encounter.Location, 8, 8, GameVersion.SWSH);
+                bool canGigantamax = Gigantamax.CanToggle(encounter.Species, encounter.Form) || encounter.CanGigantamax;
 
-                AddEncounterInfo(encounterData, gameStrings, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.Level, encounter.Level, "Static", encounter.Shiny == Shiny.Never, encounter.Gift, encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : null, versionName);
+                AddEncounterInfo(encounterData, gameStrings, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.Level, encounter.Level, "Static", encounter.Shiny == Shiny.Never, encounter.Gift, encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : null, versionName, canGigantamax);
             }
         }
 
@@ -78,12 +81,13 @@ namespace PKHeX.Core.Encounters
             foreach (var encounter in Encounters8Nest.DynAdv_SWSH)
             {
                 var locationName = gameStrings.GetLocationName(false, MaxLair, 8, 8, GameVersion.SWSH);
+                bool canGigantamax = Gigantamax.CanToggle(encounter.Species, encounter.Form) || encounter.CanGigantamax;
 
-                AddEncounterInfo(encounterData, gameStrings, errorLogger, encounter.Species, encounter.Form, locationName, MaxLair, encounter.Level, encounter.Level, "Max Lair", encounter.Shiny == Shiny.Never, false, null, "Both");
+                AddEncounterInfo(encounterData, gameStrings, errorLogger, encounter.Species, encounter.Form, locationName, MaxLair, encounter.Level, encounter.Level, "Max Lair", encounter.Shiny == Shiny.Never, false, null, "Both", canGigantamax);
             }
         }
 
-        private static void AddEncounterInfo(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger, ushort speciesIndex, byte form, string locationName, int locationId, int minLevel, int maxLevel, string encounterType, bool isShinyLocked = false, bool isGift = false, string fixedBall = null, string encounterVersion = "Both")
+        private static void AddEncounterInfo(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger, ushort speciesIndex, byte form, string locationName, int locationId, int minLevel, int maxLevel, string encounterType, bool isShinyLocked = false, bool isGift = false, string fixedBall = null, string encounterVersion = "Both", bool canGigantamax = false)
         {
             var pt = PersonalTable.SWSH;
             var personalInfo = pt[speciesIndex];
@@ -120,10 +124,11 @@ namespace PKHeX.Core.Encounters
                 IsShinyLocked = isShinyLocked,
                 IsGift = isGift,
                 FixedBall = fixedBall,
-                EncounterVersion = encounterVersion
+                EncounterVersion = encounterVersion,
+                CanGigantamax = canGigantamax
             });
 
-            errorLogger.WriteLine($"[{DateTime.Now}] Processed encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {locationId}), Levels {minLevel}-{maxLevel}, Type: {encounterType}");
+            errorLogger.WriteLine($"[{DateTime.Now}] Processed encounter: {speciesName} (Dex: {dexNumber}) at {locationName} (ID: {locationId}), Levels {minLevel}-{maxLevel}, Type: {encounterType}, Can Gigantamax: {canGigantamax}");
         }
 
         private class EncounterInfo
@@ -140,6 +145,7 @@ namespace PKHeX.Core.Encounters
             public bool IsGift { get; set; }
             public string FixedBall { get; set; }
             public string EncounterVersion { get; set; }
+            public bool CanGigantamax { get; set; }
         }
     }
 }
