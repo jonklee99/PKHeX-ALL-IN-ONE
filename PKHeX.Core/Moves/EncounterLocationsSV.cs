@@ -185,8 +185,50 @@ namespace PKHeX.Core.Encounters
                 if (string.IsNullOrEmpty(locationName))
                     locationName = "Distribution Raid Den";
 
-                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, EncounterDist9.Location, encounter.Level, encounter.Level, $"Distribution Raid {encounter.Stars}★", encounter.Shiny == Shiny.Never, false, null, "Both");
+                var versionAvailability = GetVersionAvailability(encounter);
+
+                AddEncounterInfo(
+                    encounterData,
+                    gameStrings,
+                    pt,
+                    errorLogger,
+                    encounter.Species,
+                    encounter.Form,
+                    locationName,
+                    EncounterDist9.Location,
+                    encounter.Level,
+                    encounter.Level,
+                    $"Distribution Raid {encounter.Stars}★",
+                    encounter.Shiny == Shiny.Never,
+                    false,
+                    null,
+                    versionAvailability,
+                    encounter.ScaleType,
+                    encounter.Scale
+                );
             }
+        }
+
+        private static string GetVersionAvailability(EncounterDist9 encounter)
+        {
+            bool availableInScarlet = encounter.RandRate0TotalScarlet > 0 ||
+                                      encounter.RandRate1TotalScarlet > 0 ||
+                                      encounter.RandRate2TotalScarlet > 0 ||
+                                      encounter.RandRate3TotalScarlet > 0;
+
+            bool availableInViolet = encounter.RandRate0TotalViolet > 0 ||
+                                     encounter.RandRate1TotalViolet > 0 ||
+                                     encounter.RandRate2TotalViolet > 0 ||
+                                     encounter.RandRate3TotalViolet > 0;
+
+            if (availableInScarlet && availableInViolet)
+                return "Both";
+            if (availableInScarlet)
+                return "Scarlet";
+            if (availableInViolet)
+                return "Violet";
+
+            return "Unknown"; // This shouldn't happen, but it's good to have a fallback
         }
 
         private static void ProcessOutbreakEncounters(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, PersonalTable9SV pt, StreamWriter errorLogger)
@@ -197,7 +239,25 @@ namespace PKHeX.Core.Encounters
                 if (string.IsNullOrEmpty(locationName))
                     locationName = $"Unknown Location {encounter.Location}";
 
-                AddEncounterInfo(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.LevelMin, encounter.LevelMax, "Outbreak", false, false, null, "Both");
+                AddEncounterInfo(
+                    encounterData,
+                    gameStrings,
+                    pt,
+                    errorLogger,
+                    encounter.Species,
+                    encounter.Form,
+                    locationName,
+                    encounter.Location,
+                    encounter.LevelMin,
+                    encounter.LevelMax,
+                    "Outbreak",
+                    encounter.Shiny == Shiny.Never,
+                    false,
+                    null,
+                    "Both",
+                    encounter.IsForcedScaleRange ? SizeType9.VALUE : SizeType9.RANDOM,
+                    encounter.IsForcedScaleRange ? encounter.ScaleMin : (byte)0
+                );
             }
         }
 
