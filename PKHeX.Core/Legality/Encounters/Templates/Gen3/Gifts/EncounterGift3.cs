@@ -260,7 +260,7 @@ public sealed class EncounterGift3 : IEncounterable, IEncounterMatch, IMoveset, 
     private LanguageID GetSafeLanguageNotEgg(LanguageID language)
     {
         if (Language != 0)
-            return (LanguageID) Language;
+            return (LanguageID)Language;
         if (language < LanguageID.Korean && language != LanguageID.Hacked)
         {
             if (Language == 0 && language is not LanguageID.Japanese)
@@ -367,10 +367,10 @@ public sealed class EncounterGift3 : IEncounterable, IEncounterMatch, IMoveset, 
             BACD_U => type is BACD,
             BACD_R => IsRestrictedSimple(ref value, type),
             BACD_R_A => IsRestrictedAnti(ref value, type),
-            BACD_U_AX =>  IsUnrestrictedAntiX(ref value, type),
+            BACD_U_AX => IsUnrestrictedAntiX(ref value, type),
 
             BACD_T2 => IsRestrictedTable2(ref value, type, Species, Moves.Contains((ushort)Move.Wish)),
-            BACD_T3  => IsRestrictedTable3(ref value, type, Species, Moves.Contains((ushort)Move.Wish)),
+            BACD_T3 => IsRestrictedTable3(ref value, type, Species, Moves.Contains((ushort)Move.Wish)),
             BACD_RBCD => IsBerryFixShiny(ref value, type),
             BACD_M => IsMystryMew(ref value, type),
             Channel => IsChannelJirachi(ref value, type),
