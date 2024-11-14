@@ -30,6 +30,7 @@
   <ItemGroup>
     <None Remove="MainWindow\Plugins\AutoModPlugins.dll" />
     <None Remove="MainWindow\Plugins\Overworld8.dll" />
+    <None Remove="MainWindow\Plugins\PKMRaw.dll" />
     <None Remove="MainWindow\Plugins\PluginPile.dll" />
     <None Remove="MainWindow\Plugins\PokeFilename.API.dll" />
     <None Remove="MainWindow\Plugins\PokeFilename.GUI.dll" />
@@ -40,6 +41,7 @@
   <ItemGroup>
     <EmbeddedResource Include="MainWindow\Plugins\AutoModPlugins.dll" />
     <EmbeddedResource Include="MainWindow\Plugins\Overworld8.dll" />
+    <EmbeddedResource Include="MainWindow\Plugins\PKMRaw.dll" />
     <EmbeddedResource Include="MainWindow\Plugins\PluginPile.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
