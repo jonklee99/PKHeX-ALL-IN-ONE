@@ -34,7 +34,6 @@
     <None Remove="MainWindow\Plugins\PluginPile.dll" />
     <None Remove="MainWindow\Plugins\PokeFilename.API.dll" />
     <None Remove="MainWindow\Plugins\PokeFilename.GUI.dll" />
-    <None Remove="MainWindow\Plugins\TeraFinder.Plugins.dll" />
     <None Remove="MainWindow\Plugins\TeraFinder.Plugins_v3.1.0.dll" />
   </ItemGroup>
 
@@ -50,10 +49,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="MainWindow\Plugins\PokeFilename.API.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins.dll" />
   </ItemGroup>
 
   <ItemGroup>
