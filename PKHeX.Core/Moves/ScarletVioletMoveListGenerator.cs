@@ -80,7 +80,6 @@ namespace PKHeX.Core.Moves
                         };
 
                         var learnset = learnSource9SV.GetLearnset(speciesIndex, form);
-                        var eggMoves = learnSource9SV.GetEggMoves(speciesIndex, form);
                         var reminderMoves = learnSource9SV.GetReminderMoves(speciesIndex, form);
                         var tmMoves = personalInfo.RecordPermitIndexes;
 
@@ -93,8 +92,9 @@ namespace PKHeX.Core.Moves
                             allMoves[moveId] = Math.Min(allMoves.ContainsKey(moveId) ? allMoves[moveId] : int.MaxValue, level);
                         }
 
-                        // Process egg moves
-                        foreach (var moveId in eggMoves)
+                        // Get egg moves from base form
+                        var baseFormEggMoves = GetInheritableEggMoves(speciesIndex, form, learnSource9SV, pt);
+                        foreach (var moveId in baseFormEggMoves)
                         {
                             allMoves[moveId] = 0; // Egg moves are level 0
                         }
@@ -102,7 +102,7 @@ namespace PKHeX.Core.Moves
                         // Process reminder moves
                         foreach (var moveId in reminderMoves)
                         {
-                            allMoves[moveId] = allMoves.ContainsKey(moveId) ? allMoves[moveId] : 1; // Set to 1 if not already set
+                            allMoves[moveId] = allMoves.ContainsKey(moveId) ? allMoves[moveId] : 1;
                         }
 
                         // Process TM moves
@@ -111,7 +111,7 @@ namespace PKHeX.Core.Moves
                             if (personalInfo.GetIsLearnTM(i))
                             {
                                 var moveId = tmMoves[i];
-                                allMoves[moveId] = allMoves.ContainsKey(moveId) ? allMoves[moveId] : 1; // Set to 1 if not already set
+                                allMoves[moveId] = allMoves.ContainsKey(moveId) ? allMoves[moveId] : 1;
                             }
                         }
 
@@ -130,8 +130,28 @@ namespace PKHeX.Core.Moves
                 using var errorLogger = new StreamWriter(errorLogPath, true);
                 errorLogger.WriteLine($"[{DateTime.Now}] An error occurred: {ex.Message}");
                 errorLogger.WriteLine($"Stack Trace: {ex.StackTrace}");
-                throw; // Re-throw the exception after logging
+                throw;
             }
+        }
+
+        private static ReadOnlySpan<ushort> GetInheritableEggMoves(ushort species, byte form, LearnSource9SV learnSource, PersonalTable9SV pt)
+        {
+            // Get the current species' personal info
+            if (!learnSource.TryGetPersonal(species, form, out var personalInfo))
+                return [];
+
+            // Get the current species' egg moves
+            var directEggMoves = learnSource.GetEggMoves(species, form);
+
+            // If this species has no pre-evolution (HatchSpecies is 0 or equals current species)
+            // then return its direct egg moves
+            if (personalInfo.HatchSpecies == 0 || personalInfo.HatchSpecies == species)
+                return directEggMoves;
+
+            // Get pre-evolution's egg moves
+            var baseSpecies = personalInfo.HatchSpecies;
+            var baseForm = personalInfo.HatchFormIndexEverstone;
+            return learnSource.GetEggMoves(baseSpecies, baseForm);
         }
 
         private static void ProcessMove(ushort moveId, int level, string dexNumber, string fullPokemonName, GameStrings gameStrings, StreamWriter writer, StreamWriter errorLogger)
