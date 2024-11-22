@@ -211,8 +211,8 @@ public static class EncounterServerDate
         {0062, (new(2024, 10, 31), Never)}, // PokéCenter Birthday Tandemaus
         {0513, (new(2024, 11, 15), new(2024, 11, 21))}, // Patrick Connors' Shiny Pelipper
         {1011, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Keldeo
-        {0513, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Zarude
-        {0513, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Deoxys
+        {1012, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Zarude
+        {1013, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Deoxys
 
         {9021, HOME3_ML}, // Hidden Ability Sprigatito
         {9022, HOME3_ML}, // Hidden Ability Fuecoco
