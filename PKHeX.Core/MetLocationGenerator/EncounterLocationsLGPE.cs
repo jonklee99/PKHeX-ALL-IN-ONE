@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 
-namespace PKHeX.Core.Encounters
+namespace PKHeX.Core.MetLocationGenerator
 {
     public static class EncounterLocationsLGPE
     {

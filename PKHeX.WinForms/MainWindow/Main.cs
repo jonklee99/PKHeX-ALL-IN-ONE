@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using PKHeX.Core;
-using PKHeX.Core.Encounters;
+using PKHeX.Core.MetLocationGenerator;
 using PKHeX.Core.Moves;
 using PKHeX.Drawing;
 using PKHeX.Drawing.Misc;
