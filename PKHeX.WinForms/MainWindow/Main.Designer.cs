@@ -63,6 +63,7 @@ namespace PKHeX.WinForms
             sWSHMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             lAMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             bDSPMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            lGPEMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             Menu_Options = new System.Windows.Forms.ToolStripMenuItem();
             Menu_Language = new System.Windows.Forms.ToolStripMenuItem();
             CB_MainLanguage = new System.Windows.Forms.ToolStripComboBox();
@@ -78,7 +79,12 @@ namespace PKHeX.WinForms
             PKME_Tabs = new Controls.PKMEditor();
             C_SAV = new Controls.SAVEditor();
             splitContainer2 = new System.Windows.Forms.SplitContainer();
-            lGPEMetLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            generateLegalBallsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            sVBallGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            sWSHBallGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            bDSPBallGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            pLABallGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            lGPEBallGeneratorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -154,7 +160,7 @@ namespace PKHeX.WinForms
             // 
             // Menu_Tools
             // 
-            Menu_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { Menu_Showdown, Menu_Data, Menu_Folder, generateMoveListToolStripMenuItem, generateMetLocationsToolStripMenuItem });
+            Menu_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { Menu_Showdown, Menu_Data, Menu_Folder, generateMoveListToolStripMenuItem, generateMetLocationsToolStripMenuItem, generateLegalBallsToolStripMenuItem });
             Menu_Tools.Name = "Menu_Tools";
             Menu_Tools.Size = new System.Drawing.Size(46, 20);
             Menu_Tools.Text = "Tools";
@@ -372,6 +378,13 @@ namespace PKHeX.WinForms
             bDSPMetLocationsToolStripMenuItem.Text = "BDSP Met Locations";
             bDSPMetLocationsToolStripMenuItem.Click += bDSPMetLocationsToolStripMenuItem_Click;
             // 
+            // lGPEMetLocationsToolStripMenuItem
+            // 
+            lGPEMetLocationsToolStripMenuItem.Name = "lGPEMetLocationsToolStripMenuItem";
+            lGPEMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            lGPEMetLocationsToolStripMenuItem.Text = "LGPE Met Locations";
+            lGPEMetLocationsToolStripMenuItem.Click += lGPEMetLocationsToolStripMenuItem_Click;
+            // 
             // Menu_Options
             // 
             Menu_Options.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { Menu_Language, Menu_Undo, Menu_Redo, Menu_Settings, Menu_About });
@@ -563,12 +576,43 @@ namespace PKHeX.WinForms
             splitContainer2.SplitterWidth = 1;
             splitContainer2.TabIndex = 106;
             // 
-            // lGPEMetLocationsToolStripMenuItem
+            // generateLegalBallsToolStripMenuItem
             // 
-            lGPEMetLocationsToolStripMenuItem.Name = "lGPEMetLocationsToolStripMenuItem";
-            lGPEMetLocationsToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            lGPEMetLocationsToolStripMenuItem.Text = "LGPE Met Locations";
-            lGPEMetLocationsToolStripMenuItem.Click += lGPEMetLocationsToolStripMenuItem_Click;
+            generateLegalBallsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { sVBallGeneratorToolStripMenuItem, sWSHBallGeneratorToolStripMenuItem, bDSPBallGeneratorToolStripMenuItem, pLABallGeneratorToolStripMenuItem, lGPEBallGeneratorToolStripMenuItem });
+            generateLegalBallsToolStripMenuItem.Name = "generateLegalBallsToolStripMenuItem";
+            generateLegalBallsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            generateLegalBallsToolStripMenuItem.Text = "Generate Legal Balls";
+            // 
+            // sVBallGeneratorToolStripMenuItem
+            // 
+            sVBallGeneratorToolStripMenuItem.Name = "sVBallGeneratorToolStripMenuItem";
+            sVBallGeneratorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            sVBallGeneratorToolStripMenuItem.Text = "SV Ball Generator";
+            sVBallGeneratorToolStripMenuItem.Click += sVBallGeneratorToolStripMenuItem_Click;
+            // 
+            // sWSHBallGeneratorToolStripMenuItem
+            // 
+            sWSHBallGeneratorToolStripMenuItem.Name = "sWSHBallGeneratorToolStripMenuItem";
+            sWSHBallGeneratorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            sWSHBallGeneratorToolStripMenuItem.Text = "SWSH Ball Generator";
+            // 
+            // bDSPBallGeneratorToolStripMenuItem
+            // 
+            bDSPBallGeneratorToolStripMenuItem.Name = "bDSPBallGeneratorToolStripMenuItem";
+            bDSPBallGeneratorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            bDSPBallGeneratorToolStripMenuItem.Text = "BDSP Ball Generator";
+            // 
+            // pLABallGeneratorToolStripMenuItem
+            // 
+            pLABallGeneratorToolStripMenuItem.Name = "pLABallGeneratorToolStripMenuItem";
+            pLABallGeneratorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            pLABallGeneratorToolStripMenuItem.Text = "PLA Ball Generator";
+            // 
+            // lGPEBallGeneratorToolStripMenuItem
+            // 
+            lGPEBallGeneratorToolStripMenuItem.Name = "lGPEBallGeneratorToolStripMenuItem";
+            lGPEBallGeneratorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            lGPEBallGeneratorToolStripMenuItem.Text = "LGPE Ball Generator";
             // 
             // Main
             // 
@@ -654,6 +698,12 @@ namespace PKHeX.WinForms
         private System.Windows.Forms.ToolStripMenuItem lAMetLocationsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bDSPMetLocationsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lGPEMetLocationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generateLegalBallsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sVBallGeneratorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sWSHBallGeneratorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bDSPBallGeneratorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pLABallGeneratorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lGPEBallGeneratorToolStripMenuItem;
     }
 }
 
