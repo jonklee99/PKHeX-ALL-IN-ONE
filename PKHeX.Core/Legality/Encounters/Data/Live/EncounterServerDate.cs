@@ -210,12 +210,12 @@ public static class EncounterServerDate
         {0512, (new(2024, 08, 16), new(2024, 08, 20))}, // Tomoya's Sylveon
         {0062, (new(2024, 10, 31), Never)}, // PokéCenter Birthday Tandemaus
         {0513, (new(2024, 11, 15), new(2024, 11, 21))}, // Patrick Connors' Shiny Pelipper
-        {1011, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Keldeo Korean
-        {1012, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Zarude Korean
-        {1013, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Deoxys Korean
-        {0054, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Keldeo Japanese
-        {0055, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Zarude Japanese
-        {0056, (new(2024, 11, 22), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Deoxys Japanese
+        {1011, (new(2024, 11, 21), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Keldeo Korean
+        {1012, (new(2024, 11, 21), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Zarude Korean
+        {1013, (new(2024, 11, 21), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Deoxys Korean
+        {0054, (new(2024, 11, 21), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Keldeo Japanese
+        {0055, (new(2024, 11, 21), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Zarude Japanese
+        {0056, (new(2024, 11, 21), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Deoxys Japanese
 
         {9021, HOME3_ML}, // Hidden Ability Sprigatito
         {9022, HOME3_ML}, // Hidden Ability Fuecoco
