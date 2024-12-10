@@ -44,12 +44,12 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
     public byte CardFlags { get => Data[0x0E]; set => Data[0x0E] = value; }
     public GiftType CardType { get => (GiftType)Data[0x0F]; set => Data[0x0F] = (byte)value; }
     public bool GiftRepeatable { get => (CardFlags & 1) == 0; set => CardFlags = (byte)((CardFlags & ~1) | (value ? 0 : 1)); }
-    public override bool GiftUsed { get => false; set { }  }
+    public override bool GiftUsed { get => false; set { } }
 
     public int CardTitleIndex
     {
         get => Data[0x13];
-        set => Data[0x13] = (byte) value;
+        set => Data[0x13] = (byte)value;
     }
 
     public override string CardTitle
@@ -170,11 +170,11 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
     public ushort RelearnMove4 { get => ReadUInt16LittleEndian(Data.AsSpan(0x236)); set => WriteUInt16LittleEndian(Data.AsSpan(0x236), value); }
 
     public override ushort Species { get => ReadUInt16LittleEndian(Data.AsSpan(0x238)); set => WriteUInt16LittleEndian(Data.AsSpan(0x238), value); }
-    public override byte Form   { get => Data[0x23A]; set => Data[0x23A] = value; }
+    public override byte Form { get => Data[0x23A]; set => Data[0x23A] = value; }
     public override byte Gender { get => Data[0x23B]; set => Data[0x23B] = value; }
-    public override byte Level  { get => Data[0x23C]; set => Data[0x23C] = value; }
+    public override byte Level { get => Data[0x23C]; set => Data[0x23C] = value; }
     public override bool IsEgg { get => Data[0x23D] == 1; set => Data[0x23D] = value ? (byte)1 : (byte)0; }
-    public Nature Nature          { get => (Nature)Data[0x23E]; set => Data[0x23E] = (byte)value; }
+    public Nature Nature { get => (Nature)Data[0x23E]; set => Data[0x23E] = (byte)value; }
     public override int AbilityType { get => Data[0x23F]; set => Data[0x23F] = (byte)value; }
 
     private byte PIDTypeValue => Data[0x240];
@@ -227,7 +227,7 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
         RibbonSpan[byteIndex] = ribbonIndex;
     }
 
-    public int IV_HP  { get => Data[0x264]; set => Data[0x264] = (byte)value; }
+    public int IV_HP { get => Data[0x264]; set => Data[0x264] = (byte)value; }
     public int IV_ATK { get => Data[0x265]; set => Data[0x265] = (byte)value; }
     public int IV_DEF { get => Data[0x266]; set => Data[0x266] = (byte)value; }
     public int IV_SPE { get => Data[0x267]; set => Data[0x267] = (byte)value; }
@@ -236,7 +236,7 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
 
     public byte OTGender { get => Data[0x26A]; set => Data[0x26A] = value; }
 
-    public int EV_HP  { get => Data[0x26B]; set => Data[0x26B] = (byte)value; }
+    public int EV_HP { get => Data[0x26B]; set => Data[0x26B] = (byte)value; }
     public int EV_ATK { get => Data[0x26C]; set => Data[0x26C] = (byte)value; }
     public int EV_DEF { get => Data[0x26D]; set => Data[0x26D] = (byte)value; }
     public int EV_SPE { get => Data[0x26E]; set => Data[0x26E] = (byte)value; }
@@ -244,12 +244,12 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
     public int EV_SPD { get => Data[0x270]; set => Data[0x270] = (byte)value; }
 
     public byte OriginalTrainerMemoryIntensity { get => Data[0x271]; set => Data[0x271] = value; }
-    public byte OriginalTrainerMemory    { get => Data[0x272]; set => Data[0x272] = value; }
-    public byte OriginalTrainerMemoryFeeling   { get => Data[0x273]; set => Data[0x273] = value; }
-    public ushort OriginalTrainerMemoryVariable   { get => ReadUInt16LittleEndian(Data.AsSpan(0x274)); set => WriteUInt16LittleEndian(Data.AsSpan(0x274), value); }
+    public byte OriginalTrainerMemory { get => Data[0x272]; set => Data[0x272] = value; }
+    public byte OriginalTrainerMemoryFeeling { get => Data[0x273]; set => Data[0x273] = value; }
+    public ushort OriginalTrainerMemoryVariable { get => ReadUInt16LittleEndian(Data.AsSpan(0x274)); set => WriteUInt16LittleEndian(Data.AsSpan(0x274), value); }
 
     // Only derivations to WC8
-    public byte GV_HP  { get => Data[0x276]; set => Data[0x276] = value; }
+    public byte GV_HP { get => Data[0x276]; set => Data[0x276] = value; }
     public byte GV_ATK { get => Data[0x277]; set => Data[0x277] = value; }
     public byte GV_DEF { get => Data[0x278]; set => Data[0x278] = value; }
     public byte GV_SPE { get => Data[0x279]; set => Data[0x279] = value; }
@@ -332,9 +332,9 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
 
     private static int GetLanguageIndex(int language)
     {
-        var lang = (LanguageID) language;
+        var lang = (LanguageID)language;
         if (lang is < LanguageID.Japanese or LanguageID.UNUSED_6 or > LanguageID.ChineseT)
-            return (int) LanguageID.English; // fallback
+            return (int)LanguageID.English; // fallback
         return lang < LanguageID.UNUSED_6 ? language - 1 : language - 2;
     }
 
@@ -462,7 +462,7 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
             EV_SPA = EV_SPA,
             EV_SPD = EV_SPD,
 
-            GV_HP  = GV_HP,
+            GV_HP = GV_HP,
             GV_ATK = GV_ATK,
             GV_DEF = GV_DEF,
             GV_SPE = GV_SPE,
@@ -486,11 +486,10 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
             pk.SID16 = tr.SID16;
         }
 
-        pk.MetDate = IsDateRestricted && EncounterServerDate.WA8Gifts.TryGetValue(CardID, out var dt) ? dt.Start : EncounterDate.GetDateSwitch();
-
-        // HOME Gifts for Sinnoh/Hisui starters were forced JPN until May 20, 2022 (UTC).
-        if (CardID is 9018 or 9019 or 9020)
-            pk.MetDay = 20;
+        var date = IsDateRestricted && EncounterServerDate.WA8Gifts.TryGetValue(CardID, out var dt) ? dt.Start : EncounterDate.GetDateSwitch();
+        if (IsDateLockJapanese && language != (int)LanguageID.Japanese && date < new DateOnly(2022, 5, 20)) // 2022/05/18
+            date = new DateOnly(2022, 5, 20); // Pick a better Start date that can be the language we're generating for.
+        pk.MetDate = date;
 
         var nickname_language = GetLanguage(language);
         pk.Language = nickname_language != 0 ? nickname_language : tr.Language;
@@ -520,6 +519,11 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
         pk.RefreshChecksum();
         return pk;
     }
+
+    /// <summary>
+    /// HOME Gifts for Hisui starters were forced JPN until May 20, 2022 (UTC).
+    /// </summary>
+    public bool IsDateLockJapanese => CardID is 9018 or 9019 or 9020;
 
     private void SetEggMetData(PA8 pk)
     {
@@ -558,11 +562,11 @@ public sealed class WA8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
 
     private uint GetPID(ITrainerID32 tr, ShinyType8 type) => type switch
     {
-        ShinyType8.Never        => GetAntishiny(tr), // Random, Never Shiny
-        ShinyType8.Random       => Util.Rand32(), // Random, Any
-        ShinyType8.AlwaysStar   => (1u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Star
+        ShinyType8.Never => GetAntishiny(tr), // Random, Never Shiny
+        ShinyType8.Random => Util.Rand32(), // Random, Any
+        ShinyType8.AlwaysStar => (1u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Star
         ShinyType8.AlwaysSquare => (0u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Square
-        ShinyType8.FixedValue   => GetFixedPID(tr),
+        ShinyType8.FixedValue => GetFixedPID(tr),
         _ => throw new ArgumentOutOfRangeException(nameof(type)),
     };
 

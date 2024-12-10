@@ -1,5 +1,5 @@
 using System;
-using static System.Buffers.Binary. BinaryPrimitives;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace PKHeX.Core;
 
@@ -54,7 +54,7 @@ public sealed class WB7(byte[] Data)
 
     private uint Year
     {
-        get => (RawDate / 10000) + 2000;
+        get => RawDate / 10000 + 2000;
         set => RawDate = SetDate(value, Month, Day);
     }
 
@@ -70,7 +70,7 @@ public sealed class WB7(byte[] Data)
         set => RawDate = SetDate(Year, Month, value);
     }
 
-    private static uint SetDate(uint year, uint month, uint day) => (Math.Max(0, year - 2000) * 10000) + (month * 100) + day;
+    private static uint SetDate(uint year, uint month, uint day) => Math.Max(0, year - 2000) * 10000 + month * 100 + day;
 
     /// <summary>
     /// Gets or sets the date of the card.
@@ -110,19 +110,19 @@ public sealed class WB7(byte[] Data)
     public int CardType { get => Data[CardStart + 0x51]; set => Data[CardStart + 0x51] = (byte)value; }
     public byte CardFlags { get => Data[CardStart + 0x52]; set => Data[CardStart + 0x52] = value; }
 
-    public bool GiftRepeatable { get => (CardFlags & 1) == 0; set => CardFlags = (byte)((CardFlags & ~1) | (value ? 0 : 1)); }
-    public override bool GiftUsed { get => (CardFlags & 2) == 2; set => CardFlags = (byte)((CardFlags & ~2) | (value ? 2 : 0)); }
-    public bool GiftOncePerDay { get => (CardFlags & 4) == 4; set => CardFlags = (byte)((CardFlags & ~4) | (value ? 4 : 0)); }
+    public bool GiftRepeatable { get => (CardFlags & 1) == 0; set => CardFlags = (byte)(CardFlags & ~1 | (value ? 0 : 1)); }
+    public override bool GiftUsed { get => (CardFlags & 2) == 2; set => CardFlags = (byte)(CardFlags & ~2 | (value ? 2 : 0)); }
+    public bool GiftOncePerDay { get => (CardFlags & 4) == 4; set => CardFlags = (byte)(CardFlags & ~4 | (value ? 4 : 0)); }
 
     public bool MultiObtain { get => Data[CardStart + 0x53] == 1; set => Data[CardStart + 0x53] = value ? (byte)1 : (byte)0; }
 
     // Item Properties
     public override bool IsItem { get => CardType == 1; set { if (value) CardType = 1; } }
     public override int ItemID { get => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0x68)); set => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0x68), (ushort)value); }
-    public int GetItem(int index) => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0x68 + (0x4 * index)));
-    public void SetItem(int index, ushort item) => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0x68 + (4 * index)), item);
-    public int GetQuantity(int index) => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0x6A + (0x4 * index)));
-    public void SetQuantity(int index, ushort quantity) => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0x6A + (4 * index)), quantity);
+    public int GetItem(int index) => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0x68 + 0x4 * index));
+    public void SetItem(int index, ushort item) => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0x68 + 4 * index), item);
+    public int GetQuantity(int index) => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0x6A + 0x4 * index));
+    public void SetQuantity(int index, ushort quantity) => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0x6A + 4 * index), quantity);
 
     public override int Quantity
     {
@@ -155,7 +155,8 @@ public sealed class WB7(byte[] Data)
         set => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0x68), value);
     }
 
-    public override ushort SID16 {
+    public override ushort SID16
+    {
         get => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0x6A));
         set => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0x6A), value);
     }
@@ -166,7 +167,8 @@ public sealed class WB7(byte[] Data)
         set => WriteInt32LittleEndian(Data.AsSpan(CardStart + 0x6C), value);
     }
 
-    public uint EncryptionConstant {
+    public uint EncryptionConstant
+    {
         get => ReadUInt32LittleEndian(Data.AsSpan(CardStart + 0x70));
         set => WriteUInt32LittleEndian(Data.AsSpan(CardStart + 0x70), value);
     }
@@ -174,7 +176,8 @@ public sealed class WB7(byte[] Data)
     public override byte Ball
     {
         get => Data[CardStart + 0x76];
-        set => Data[CardStart + 0x76] = value; }
+        set => Data[CardStart + 0x76] = value;
+    }
 
     public override int HeldItem // no references
     {
@@ -202,7 +205,7 @@ public sealed class WB7(byte[] Data)
     public override int AbilityType { get => 3; set => Data[CardStart + 0xA2] = (byte)value; } // no references, always ability 0/1
     public ShinyType6 PIDType { get => (ShinyType6)Data[CardStart + 0xA3]; set => Data[CardStart + 0xA3] = (byte)value; }
     public override ushort EggLocation { get => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0xA4)); set => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0xA4), value); }
-    public override ushort Location  { get => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0xA6)); set => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0xA6), value); }
+    public override ushort Location { get => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0xA6)); set => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0xA6), value); }
     public byte MetLevel { get => Data[CardStart + 0xA8]; set => Data[CardStart + 0xA8] = value; }
 
     public int IV_HP { get => Data[CardStart + 0xAF]; set => Data[CardStart + 0xAF] = (byte)value; }
@@ -230,7 +233,7 @@ public sealed class WB7(byte[] Data)
     public ushort RelearnMove3 { get => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0xDC)); set => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0xDC), value); }
     public ushort RelearnMove4 { get => ReadUInt16LittleEndian(Data.AsSpan(CardStart + 0xDE)); set => WriteUInt16LittleEndian(Data.AsSpan(CardStart + 0xDE), value); }
 
-    public byte AV_HP  { get => Data[CardStart + 0xE5]; set => Data[CardStart + 0xE5] = value; }
+    public byte AV_HP { get => Data[CardStart + 0xE5]; set => Data[CardStart + 0xE5] = value; }
     public byte AV_ATK { get => Data[CardStart + 0xE6]; set => Data[CardStart + 0xE6] = value; }
     public byte AV_DEF { get => Data[CardStart + 0xE7]; set => Data[CardStart + 0xE7] = value; }
     public byte AV_SPE { get => Data[CardStart + 0xE8]; set => Data[CardStart + 0xE8] = value; }
@@ -265,9 +268,9 @@ public sealed class WB7(byte[] Data)
 
     private static int GetLanguageIndex(int language)
     {
-        var lang = (LanguageID) language;
+        var lang = (LanguageID)language;
         if (lang is < LanguageID.Japanese or LanguageID.UNUSED_6 or > LanguageID.ChineseT)
-            return (int) LanguageID.English; // fallback
+            return (int)LanguageID.English; // fallback
         return lang < LanguageID.UNUSED_6 ? language - 1 : language - 2;
     }
 
@@ -315,7 +318,7 @@ public sealed class WB7(byte[] Data)
     /// <remarks>
     /// Gifts received can be locally traded to the international release, so there is no need to consider residence or transferability.
     /// </remarks>
-    public bool IsMainlandChinaGift => CardID is (1501);
+    public bool IsMainlandChinaGift => CardID is 1501;
 
     public int GetLanguage(int redeemLanguage)
     {
@@ -346,13 +349,13 @@ public sealed class WB7(byte[] Data)
     private static int GetNicknameOffset(int language)
     {
         int index = GetLanguageIndex(language);
-        return 0x04 + (index * 0x1A);
+        return 0x04 + index * 0x1A;
     }
 
     private static int GetOTOffset(int language)
     {
         int index = GetLanguageIndex(language);
-        return 0xEE + (index * 0x1A);
+        return 0xEE + index * 0x1A;
     }
 
     public override PB7 ConvertToPKM(ITrainerInfo tr, EncounterCriteria criteria)
@@ -416,7 +419,7 @@ public sealed class WB7(byte[] Data)
 
         pk.SetMaximumPPCurrent();
 
-        if ((tr.Generation > Generation && OriginGame == 0) || !CanBeReceivedByVersion(pk.Version))
+        if (tr.Generation > Generation && OriginGame == 0 || !CanBeReceivedByVersion(pk.Version))
         {
             // give random valid game
             do { pk.Version = GameVersion.GP + (byte)rnd.Next(2); }
@@ -494,7 +497,7 @@ public sealed class WB7(byte[] Data)
                 break;
             case ShinyType6.Always: // Random Shiny
                 var low = Util.Rand32() & 0xFFFF;
-                pk.PID = ((low ^ pk.TID16 ^ pk.SID16) << 16) | low;
+                pk.PID = (low ^ pk.TID16 ^ pk.SID16) << 16 | low;
                 break;
             case ShinyType6.Never: // Random Nonshiny
                 pk.PID = Util.Rand32();
@@ -533,7 +536,7 @@ public sealed class WB7(byte[] Data)
 
     public bool CanHaveLanguage(int language)
     {
-        if (language is < (int) LanguageID.Japanese or > (int) LanguageID.ChineseT)
+        if (language is < (int)LanguageID.Japanese or > (int)LanguageID.ChineseT)
             return false;
 
         if (IsMainlandChinaGift)

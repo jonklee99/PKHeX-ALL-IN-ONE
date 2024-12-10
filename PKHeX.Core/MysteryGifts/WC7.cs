@@ -190,7 +190,8 @@ public sealed class WC7(byte[] Data) : DataMysteryGift(Data), IRibbonSetEvent3, 
         set => Data[0x6C] = value;
     }
 
-    public uint EncryptionConstant {
+    public uint EncryptionConstant
+    {
         get => ReadUInt32LittleEndian(Data.AsSpan(0x70));
         set => WriteUInt32LittleEndian(Data.AsSpan(0x70), value);
     }
@@ -198,7 +199,8 @@ public sealed class WC7(byte[] Data) : DataMysteryGift(Data), IRibbonSetEvent3, 
     public override byte Ball
     {
         get => Data[0x76];
-        set => Data[0x76] = value; }
+        set => Data[0x76] = value;
+    }
 
     public override int HeldItem
     {
@@ -228,12 +230,12 @@ public sealed class WC7(byte[] Data) : DataMysteryGift(Data), IRibbonSetEvent3, 
     public override ushort Location { get => ReadUInt16LittleEndian(Data.AsSpan(0xA6)); set => WriteUInt16LittleEndian(Data.AsSpan(0xA6), value); }
     public byte MetLevel { get => Data[0xA8]; set => Data[0xA8] = value; }
 
-    public byte ContestCool   { get => Data[0xA9]; set => Data[0xA9] = value; }
+    public byte ContestCool { get => Data[0xA9]; set => Data[0xA9] = value; }
     public byte ContestBeauty { get => Data[0xAA]; set => Data[0xAA] = value; }
-    public byte ContestCute   { get => Data[0xAB]; set => Data[0xAB] = value; }
-    public byte ContestSmart  { get => Data[0xAC]; set => Data[0xAC] = value; }
-    public byte ContestTough  { get => Data[0xAD]; set => Data[0xAD] = value; }
-    public byte ContestSheen  { get => Data[0xAE]; set => Data[0xAE] = value; }
+    public byte ContestCute { get => Data[0xAB]; set => Data[0xAB] = value; }
+    public byte ContestSmart { get => Data[0xAC]; set => Data[0xAC] = value; }
+    public byte ContestTough { get => Data[0xAD]; set => Data[0xAD] = value; }
+    public byte ContestSheen { get => Data[0xAE]; set => Data[0xAE] = value; }
 
     public int IV_HP { get => Data[0xAF]; set => Data[0xAF] = (byte)value; }
     public int IV_ATK { get => Data[0xB0]; set => Data[0xB0] = (byte)value; }
@@ -276,22 +278,22 @@ public sealed class WC7(byte[] Data) : DataMysteryGift(Data), IRibbonSetEvent3, 
 
     private byte RIB0 { get => Data[0x74]; set => Data[0x74] = value; }
     private byte RIB1 { get => Data[0x75]; set => Data[0x75] = value; }
-    public bool RibbonChampionBattle   { get => (RIB0 & (1 << 0)) == 1 << 0; set => RIB0 = (byte)((RIB0 & ~(1 << 0)) | (value ? 1 << 0 : 0)); }
+    public bool RibbonChampionBattle { get => (RIB0 & (1 << 0)) == 1 << 0; set => RIB0 = (byte)((RIB0 & ~(1 << 0)) | (value ? 1 << 0 : 0)); }
     public bool RibbonChampionRegional { get => (RIB0 & (1 << 1)) == 1 << 1; set => RIB0 = (byte)((RIB0 & ~(1 << 1)) | (value ? 1 << 1 : 0)); }
     public bool RibbonChampionNational { get => (RIB0 & (1 << 2)) == 1 << 2; set => RIB0 = (byte)((RIB0 & ~(1 << 2)) | (value ? 1 << 2 : 0)); }
-    public bool RibbonCountry          { get => (RIB0 & (1 << 3)) == 1 << 3; set => RIB0 = (byte)((RIB0 & ~(1 << 3)) | (value ? 1 << 3 : 0)); }
-    public bool RibbonNational         { get => (RIB0 & (1 << 4)) == 1 << 4; set => RIB0 = (byte)((RIB0 & ~(1 << 4)) | (value ? 1 << 4 : 0)); }
-    public bool RibbonEarth            { get => (RIB0 & (1 << 5)) == 1 << 5; set => RIB0 = (byte)((RIB0 & ~(1 << 5)) | (value ? 1 << 5 : 0)); }
-    public bool RibbonWorld            { get => (RIB0 & (1 << 6)) == 1 << 6; set => RIB0 = (byte)((RIB0 & ~(1 << 6)) | (value ? 1 << 6 : 0)); }
-    public bool RibbonEvent            { get => (RIB0 & (1 << 7)) == 1 << 7; set => RIB0 = (byte)((RIB0 & ~(1 << 7)) | (value ? 1 << 7 : 0)); }
-    public bool RibbonChampionWorld    { get => (RIB1 & (1 << 0)) == 1 << 0; set => RIB1 = (byte)((RIB1 & ~(1 << 0)) | (value ? 1 << 0 : 0)); }
-    public bool RibbonBirthday         { get => (RIB1 & (1 << 1)) == 1 << 1; set => RIB1 = (byte)((RIB1 & ~(1 << 1)) | (value ? 1 << 1 : 0)); }
-    public bool RibbonSpecial          { get => (RIB1 & (1 << 2)) == 1 << 2; set => RIB1 = (byte)((RIB1 & ~(1 << 2)) | (value ? 1 << 2 : 0)); }
-    public bool RibbonSouvenir         { get => (RIB1 & (1 << 3)) == 1 << 3; set => RIB1 = (byte)((RIB1 & ~(1 << 3)) | (value ? 1 << 3 : 0)); }
-    public bool RibbonWishing          { get => (RIB1 & (1 << 4)) == 1 << 4; set => RIB1 = (byte)((RIB1 & ~(1 << 4)) | (value ? 1 << 4 : 0)); }
-    public bool RibbonClassic          { get => (RIB1 & (1 << 5)) == 1 << 5; set => RIB1 = (byte)((RIB1 & ~(1 << 5)) | (value ? 1 << 5 : 0)); }
-    public bool RibbonPremier          { get => (RIB1 & (1 << 6)) == 1 << 6; set => RIB1 = (byte)((RIB1 & ~(1 << 6)) | (value ? 1 << 6 : 0)); }
-    public bool RIB1_7                 { get => (RIB1 & (1 << 7)) == 1 << 7; set => RIB1 = (byte)((RIB1 & ~(1 << 7)) | (value ? 1 << 7 : 0)); }
+    public bool RibbonCountry { get => (RIB0 & (1 << 3)) == 1 << 3; set => RIB0 = (byte)((RIB0 & ~(1 << 3)) | (value ? 1 << 3 : 0)); }
+    public bool RibbonNational { get => (RIB0 & (1 << 4)) == 1 << 4; set => RIB0 = (byte)((RIB0 & ~(1 << 4)) | (value ? 1 << 4 : 0)); }
+    public bool RibbonEarth { get => (RIB0 & (1 << 5)) == 1 << 5; set => RIB0 = (byte)((RIB0 & ~(1 << 5)) | (value ? 1 << 5 : 0)); }
+    public bool RibbonWorld { get => (RIB0 & (1 << 6)) == 1 << 6; set => RIB0 = (byte)((RIB0 & ~(1 << 6)) | (value ? 1 << 6 : 0)); }
+    public bool RibbonEvent { get => (RIB0 & (1 << 7)) == 1 << 7; set => RIB0 = (byte)((RIB0 & ~(1 << 7)) | (value ? 1 << 7 : 0)); }
+    public bool RibbonChampionWorld { get => (RIB1 & (1 << 0)) == 1 << 0; set => RIB1 = (byte)((RIB1 & ~(1 << 0)) | (value ? 1 << 0 : 0)); }
+    public bool RibbonBirthday { get => (RIB1 & (1 << 1)) == 1 << 1; set => RIB1 = (byte)((RIB1 & ~(1 << 1)) | (value ? 1 << 1 : 0)); }
+    public bool RibbonSpecial { get => (RIB1 & (1 << 2)) == 1 << 2; set => RIB1 = (byte)((RIB1 & ~(1 << 2)) | (value ? 1 << 2 : 0)); }
+    public bool RibbonSouvenir { get => (RIB1 & (1 << 3)) == 1 << 3; set => RIB1 = (byte)((RIB1 & ~(1 << 3)) | (value ? 1 << 3 : 0)); }
+    public bool RibbonWishing { get => (RIB1 & (1 << 4)) == 1 << 4; set => RIB1 = (byte)((RIB1 & ~(1 << 4)) | (value ? 1 << 4 : 0)); }
+    public bool RibbonClassic { get => (RIB1 & (1 << 5)) == 1 << 5; set => RIB1 = (byte)((RIB1 & ~(1 << 5)) | (value ? 1 << 5 : 0)); }
+    public bool RibbonPremier { get => (RIB1 & (1 << 6)) == 1 << 6; set => RIB1 = (byte)((RIB1 & ~(1 << 6)) | (value ? 1 << 6 : 0)); }
+    public bool RIB1_7 { get => (RIB1 & (1 << 7)) == 1 << 7; set => RIB1 = (byte)((RIB1 & ~(1 << 7)) | (value ? 1 << 7 : 0)); }
 
     // Meta Accessible Properties
     public int[] IVs
@@ -380,9 +382,14 @@ public sealed class WC7(byte[] Data) : DataMysteryGift(Data), IRibbonSetEvent3, 
             Version = version,
             Language = language,
             Ball = Ball,
-            Move1 = Move1, Move2 = Move2, Move3 = Move3, Move4 = Move4,
-            RelearnMove1 = RelearnMove1, RelearnMove2 = RelearnMove2,
-            RelearnMove3 = RelearnMove3, RelearnMove4 = RelearnMove4,
+            Move1 = Move1,
+            Move2 = Move2,
+            Move3 = Move3,
+            Move4 = Move4,
+            RelearnMove1 = RelearnMove1,
+            RelearnMove2 = RelearnMove2,
+            RelearnMove3 = RelearnMove3,
+            RelearnMove4 = RelearnMove4,
             MetLocation = Location,
             EggLocation = EggLocation,
             ContestCool = ContestCool,

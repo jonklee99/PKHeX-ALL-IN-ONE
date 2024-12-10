@@ -50,12 +50,12 @@ public sealed class WC8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
     public byte CardFlags { get => Data[CardStart + 0x10]; set => Data[CardStart + 0x10] = value; }
     public GiftType CardType { get => (GiftType)Data[CardStart + 0x11]; set => Data[CardStart + 0x11] = (byte)value; }
     public bool GiftRepeatable { get => (CardFlags & 1) == 0; set => CardFlags = (byte)((CardFlags & ~1) | (value ? 0 : 1)); }
-    public override bool GiftUsed { get => false; set { }  }
+    public override bool GiftUsed { get => false; set { } }
 
     public int CardTitleIndex
     {
         get => Data[CardStart + 0x15];
-        set => Data[CardStart + 0x15] = (byte) value;
+        set => Data[CardStart + 0x15] = (byte)value;
     }
 
     public override string CardTitle
@@ -226,7 +226,7 @@ public sealed class WC8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
         RibbonSpan[byteIndex] = ribbonIndex;
     }
 
-    public int IV_HP  { get => Data[CardStart + 0x26C]; set => Data[CardStart + 0x26C] = (byte)value; }
+    public int IV_HP { get => Data[CardStart + 0x26C]; set => Data[CardStart + 0x26C] = (byte)value; }
     public int IV_ATK { get => Data[CardStart + 0x26D]; set => Data[CardStart + 0x26D] = (byte)value; }
     public int IV_DEF { get => Data[CardStart + 0x26E]; set => Data[CardStart + 0x26E] = (byte)value; }
     public int IV_SPE { get => Data[CardStart + 0x26F]; set => Data[CardStart + 0x26F] = (byte)value; }
@@ -235,7 +235,7 @@ public sealed class WC8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
 
     public byte OTGender { get => Data[CardStart + 0x272]; set => Data[CardStart + 0x272] = value; }
 
-    public int EV_HP  { get => Data[CardStart + 0x273]; set => Data[CardStart + 0x273] = (byte)value; }
+    public int EV_HP { get => Data[CardStart + 0x273]; set => Data[CardStart + 0x273] = (byte)value; }
     public int EV_ATK { get => Data[CardStart + 0x274]; set => Data[CardStart + 0x274] = (byte)value; }
     public int EV_DEF { get => Data[CardStart + 0x275]; set => Data[CardStart + 0x275] = (byte)value; }
     public int EV_SPE { get => Data[CardStart + 0x276]; set => Data[CardStart + 0x276] = (byte)value; }
@@ -325,9 +325,9 @@ public sealed class WC8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
 
     private static int GetLanguageIndex(int language)
     {
-        var lang = (LanguageID) language;
+        var lang = (LanguageID)language;
         if (lang is < LanguageID.Japanese or LanguageID.UNUSED_6 or > LanguageID.ChineseT)
-            return (int) LanguageID.English; // fallback
+            return (int)LanguageID.English; // fallback
         return lang < LanguageID.UNUSED_6 ? language - 1 : language - 2;
     }
 
@@ -579,11 +579,11 @@ public sealed class WC8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
 
     private uint GetPID(PKM tr, ShinyType8 type) => type switch
     {
-        ShinyType8.Never        => GetAntishiny(tr), // Random, Never Shiny
-        ShinyType8.Random       => Util.Rand32(), // Random, Any
-        ShinyType8.AlwaysStar   => (1u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Star
+        ShinyType8.Never => GetAntishiny(tr), // Random, Never Shiny
+        ShinyType8.Random => Util.Rand32(), // Random, Any
+        ShinyType8.AlwaysStar => (1u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Star
         ShinyType8.AlwaysSquare => (0u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Square
-        ShinyType8.FixedValue   => GetFixedPID(tr),
+        ShinyType8.FixedValue => GetFixedPID(tr),
         _ => throw new ArgumentOutOfRangeException(nameof(type)),
     };
 

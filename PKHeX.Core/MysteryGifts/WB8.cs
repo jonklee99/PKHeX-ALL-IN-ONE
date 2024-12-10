@@ -55,12 +55,12 @@ public sealed class WB8(byte[] Data) : DataMysteryGift(Data),
     public GiftType CardType { get => (GiftType)Data[CardStart + 0x11]; set => Data[CardStart + 0x11] = (byte)value; }
     public bool GiftRepeatable { get => (CardFlags & 1) == 0; set => CardFlags = (byte)((CardFlags & ~1) | (value ? 0 : 1)); }
     public bool GiftOncePerDay { get => (CardFlags & 4) == 4; set => CardFlags = (byte)((CardFlags & ~4) | (value ? 4 : 0)); }
-    public override bool GiftUsed { get => false; set { }  }
+    public override bool GiftUsed { get => false; set { } }
 
     public int CardTitleIndex
     {
         get => Data[CardStart + 0x12];
-        set => Data[CardStart + 0x12] = (byte) value;
+        set => Data[CardStart + 0x12] = (byte)value;
     }
 
     public override string CardTitle
@@ -228,7 +228,7 @@ public sealed class WB8(byte[] Data) : DataMysteryGift(Data),
         RibbonSpan[byteIndex] = ribbonIndex;
     }
 
-    public int IV_HP  { get => Data[CardStart + 0x2B2]; set => Data[CardStart + 0x2B2] = (byte)value; }
+    public int IV_HP { get => Data[CardStart + 0x2B2]; set => Data[CardStart + 0x2B2] = (byte)value; }
     public int IV_ATK { get => Data[CardStart + 0x2B3]; set => Data[CardStart + 0x2B3] = (byte)value; }
     public int IV_DEF { get => Data[CardStart + 0x2B4]; set => Data[CardStart + 0x2B4] = (byte)value; }
     public int IV_SPE { get => Data[CardStart + 0x2B5]; set => Data[CardStart + 0x2B5] = (byte)value; }
@@ -237,19 +237,19 @@ public sealed class WB8(byte[] Data) : DataMysteryGift(Data),
 
     public byte OTGender { get => Data[CardStart + 0x2B8]; set => Data[CardStart + 0x2B8] = value; }
 
-    public int EV_HP  { get => Data[CardStart + 0x2B9]; set => Data[CardStart + 0x2B9] = (byte)value; }
+    public int EV_HP { get => Data[CardStart + 0x2B9]; set => Data[CardStart + 0x2B9] = (byte)value; }
     public int EV_ATK { get => Data[CardStart + 0x2BA]; set => Data[CardStart + 0x2BA] = (byte)value; }
     public int EV_DEF { get => Data[CardStart + 0x2BB]; set => Data[CardStart + 0x2BB] = (byte)value; }
     public int EV_SPE { get => Data[CardStart + 0x2BC]; set => Data[CardStart + 0x2BC] = (byte)value; }
     public int EV_SPA { get => Data[CardStart + 0x2BD]; set => Data[CardStart + 0x2BD] = (byte)value; }
     public int EV_SPD { get => Data[CardStart + 0x2BE]; set => Data[CardStart + 0x2BE] = (byte)value; }
 
-    public byte ContestCool   { get => Data[0x2BF]; set => Data[0x2BF] = value; }
+    public byte ContestCool { get => Data[0x2BF]; set => Data[0x2BF] = value; }
     public byte ContestBeauty { get => Data[0x2C0]; set => Data[0x2C0] = value; }
-    public byte ContestCute   { get => Data[0x2C1]; set => Data[0x2C1] = value; }
-    public byte ContestSmart  { get => Data[0x2C2]; set => Data[0x2C2] = value; }
-    public byte ContestTough  { get => Data[0x2C3]; set => Data[0x2C3] = value; }
-    public byte ContestSheen  { get => Data[0x2C4]; set => Data[0x2C4] = value; }
+    public byte ContestCute { get => Data[0x2C1]; set => Data[0x2C1] = value; }
+    public byte ContestSmart { get => Data[0x2C2]; set => Data[0x2C2] = value; }
+    public byte ContestTough { get => Data[0x2C3]; set => Data[0x2C3] = value; }
+    public byte ContestSheen { get => Data[0x2C4]; set => Data[0x2C4] = value; }
 
     // Meta Accessible Properties
     public int[] IVs
@@ -326,9 +326,9 @@ public sealed class WB8(byte[] Data) : DataMysteryGift(Data),
 
     private static int GetLanguageIndex(int language)
     {
-        var lang = (LanguageID) language;
+        var lang = (LanguageID)language;
         if (lang is < LanguageID.Japanese or LanguageID.UNUSED_6 or > LanguageID.ChineseT)
-            return (int) LanguageID.English; // fallback
+            return (int)LanguageID.English; // fallback
         return lang < LanguageID.UNUSED_6 ? language - 1 : language - 2;
     }
 
@@ -484,10 +484,10 @@ public sealed class WB8(byte[] Data) : DataMysteryGift(Data),
             pk.SID16 = tr.SID16;
         }
 
-        pk.MetDate = IsDateRestricted && EncounterServerDate.WB8Gifts.TryGetValue(CardID, out var dt) ? dt.Start : EncounterDate.GetDateSwitch();
-        // HOME Gifts for Sinnoh/Hisui starters were forced JPN until May 20, 2022 (UTC).
-        if (CardID is 9015 or 9016 or 9017)
-            pk.MetDay = 20;
+        var date = IsDateRestricted && EncounterServerDate.WB8Gifts.TryGetValue(CardID, out var dt) ? dt.Start : EncounterDate.GetDateSwitch();
+        if (IsDateLockJapanese && language != (int)LanguageID.Japanese && date < new DateOnly(2022, 5, 20)) // 2022/05/18
+            date = new DateOnly(2022, 5, 20); // Pick a better Start date that can be the language we're generating for.
+        pk.MetDate = date;
 
         var nickname_language = GetLanguage(language);
         pk.Language = nickname_language != 0 ? nickname_language : tr.Language;
@@ -514,6 +514,11 @@ public sealed class WB8(byte[] Data) : DataMysteryGift(Data),
         pk.RefreshChecksum();
         return pk;
     }
+
+    /// <summary>
+    /// HOME Gifts for Sinnoh starters were forced JPN until May 20, 2022 (UTC).
+    /// </summary>
+    public bool IsDateLockJapanese => CardID is 9015 or 9016 or 9017;
 
     private void SetEggMetData(PB8 pk)
     {
@@ -553,11 +558,11 @@ public sealed class WB8(byte[] Data) : DataMysteryGift(Data),
 
     private uint GetPID(ITrainerID32 tr, ShinyType8 type) => type switch
     {
-        ShinyType8.Never        => GetAntishiny(tr), // Random, Never Shiny
-        ShinyType8.Random       => Util.Rand32(), // Random, Any
-        ShinyType8.AlwaysStar   => (1u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Star
+        ShinyType8.Never => GetAntishiny(tr), // Random, Never Shiny
+        ShinyType8.Random => Util.Rand32(), // Random, Any
+        ShinyType8.AlwaysStar => (1u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Star
         ShinyType8.AlwaysSquare => (0u ^ (PID & 0xFFFF) ^ tr.TID16 ^ tr.SID16) << 16 | (PID & 0xFFFF), // Fixed, Force Square
-        ShinyType8.FixedValue   => GetFixedPID(tr),
+        ShinyType8.FixedValue => GetFixedPID(tr),
         _ => throw new ArgumentOutOfRangeException(nameof(type)),
     };
 

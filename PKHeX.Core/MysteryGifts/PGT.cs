@@ -1,8 +1,9 @@
 using System;
+using PKHeX.Core;
 using static System.Buffers.Binary.BinaryPrimitives;
-using static PKHeX.Core.GiftType4;
+using static PKHeX.Core.MysteryGifts.GiftType4;
 
-namespace PKHeX.Core;
+namespace PKHeX.Core.MysteryGifts;
 
 /// <summary>
 /// Generation 4 Mystery Gift Template File (Inner Gift Data, no card data)
@@ -107,7 +108,7 @@ public sealed class PGT(byte[] Data) : DataMysteryGift(Data), IRibbonSetEvent3, 
     public override bool IsShiny => PK.IsShiny;
     public override byte Gender { get => PK.Gender; set => PK.Gender = value; }
     public override byte Form { get => PK.Form; set => PK.Form = value; }
-    public override uint ID32 { get => PK.ID32; set => PK.ID32= value; }
+    public override uint ID32 { get => PK.ID32; set => PK.ID32 = value; }
     public override ushort TID16 { get => PK.TID16; set => PK.TID16 = value; }
     public override ushort SID16 { get => PK.SID16; set => PK.SID16 = value; }
     public override string OriginalTrainerName { get => PK.OriginalTrainerName; set => PK.OriginalTrainerName = value; }
@@ -202,9 +203,9 @@ public sealed class PGT(byte[] Data) : DataMysteryGift(Data), IRibbonSetEvent3, 
         // Generate IVs
         if ((pk4.IV32 & 0x3FFF_FFFFu) == 0) // Ignore Nickname/Egg flag bits
         {
-            uint iv1 = ((seed = LCRNG.Next(seed)) >> 16) & 0x7FFF;
-            uint iv2 = (LCRNG.Next(seed) >> 16) & 0x7FFF;
-            pk4.IV32 |= iv1 | (iv2 << 15);
+            uint iv1 = (seed = LCRNG.Next(seed)) >> 16 & 0x7FFF;
+            uint iv2 = LCRNG.Next(seed) >> 16 & 0x7FFF;
+            pk4.IV32 |= iv1 | iv2 << 15;
         }
     }
 
