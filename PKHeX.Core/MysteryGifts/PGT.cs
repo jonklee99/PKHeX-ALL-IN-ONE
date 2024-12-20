@@ -1,9 +1,8 @@
 using System;
-using PKHeX.Core;
 using static System.Buffers.Binary.BinaryPrimitives;
-using static PKHeX.Core.MysteryGifts.GiftType4;
+using static PKHeX.Core.GiftType4;
 
-namespace PKHeX.Core.MysteryGifts;
+namespace PKHeX.Core;
 
 /// <summary>
 /// Generation 4 Mystery Gift Template File (Inner Gift Data, no card data)
@@ -203,9 +202,9 @@ public sealed class PGT(byte[] Data) : DataMysteryGift(Data), IRibbonSetEvent3, 
         // Generate IVs
         if ((pk4.IV32 & 0x3FFF_FFFFu) == 0) // Ignore Nickname/Egg flag bits
         {
-            uint iv1 = (seed = LCRNG.Next(seed)) >> 16 & 0x7FFF;
-            uint iv2 = LCRNG.Next(seed) >> 16 & 0x7FFF;
-            pk4.IV32 |= iv1 | iv2 << 15;
+            uint iv1 = ((seed = LCRNG.Next(seed)) >> 16) & 0x7FFF;
+            uint iv2 = (LCRNG.Next(seed) >> 16) & 0x7FFF;
+            pk4.IV32 |= iv1 | (iv2 << 15);
         }
     }
 
