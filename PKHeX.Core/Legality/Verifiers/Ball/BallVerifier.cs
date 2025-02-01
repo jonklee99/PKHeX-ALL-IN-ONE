@@ -21,7 +21,8 @@ public sealed class BallVerifier : Verifier
     private static byte IsReplacedBall(IVersion enc, PKM pk) => pk switch
     {
         // Trading from PLA origin -> SW/SH will replace the Legends: Arceus ball with a regular Poké Ball
-        PK8 when enc.Version == GameVersion.PLA => (int)Poke,
+        // Enamorus is a special case where the ball is not replaced with a Poké Ball (it's a Cherish Ball)
+        PK8 when enc.Version == GameVersion.PLA && enc is not IFixedBall { FixedBall: (> 0 and < Strange) } => (int)Poke,
 
         // No replacement done.
         _ => (int)None,
