@@ -202,7 +202,7 @@ public sealed record EncounterTrade8b : IEncounterable, IEncounterMatch, IFixedT
         if (currentLanguageID is not ((int)LanguageID.Japanese or (int)LanguageID.German))
             return -1;
 
-        for (int i = 1; i < (int)LanguageID.ChineseT; i++)
+        for (int i = 1; i <= (int)LanguageID.ChineseT; i++)
         {
             if (!nick.SequenceEqual(Nicknames[i]))
                 continue;
