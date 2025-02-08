@@ -219,6 +219,7 @@ public static class EncounterServerDate
         {0055, (new(2024, 11, 21), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Zarude Japanese
         {0056, (new(2024, 11, 21), new(2025, 04, 30))}, // Mythical Pokémon Get Operation - Deoxys Japanese
         {1010, (new(2025, 01, 21), new(2025, 04, 01))}, // Pokémon Lucario & The Mystery of Mew Movie Gift KOR 아론's Lucario
+        {0514, (new(2025, 02, 05), new(2025, 07, 01))}, // Pokémon Day 2025 Flying Tera Type Eevee
 
         {9021, HOME3_ML}, // Hidden Ability Sprigatito
         {9022, HOME3_ML}, // Hidden Ability Fuecoco
