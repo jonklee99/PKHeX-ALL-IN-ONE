@@ -515,8 +515,15 @@ public sealed class WC8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
 
         if (!IsHOMEGiftOld(date))
         {
-            pk.HeightScalar = PokeSizeUtil.GetRandomScalar(rnd);
-            pk.WeightScalar = PokeSizeUtil.GetRandomScalar(rnd);
+            if (IsScalarFixed)
+            {
+                pk.HeightScalar = pk.WeightScalar = GetHomeScalar();
+            }
+            else
+            {
+                pk.HeightScalar = PokeSizeUtil.GetRandomScalar(rnd);
+                pk.WeightScalar = PokeSizeUtil.GetRandomScalar(rnd);
+            }
         }
 
         pk.ResetPartyStats();
@@ -530,6 +537,18 @@ public sealed class WC8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
         const int DayNumberHOME300 = 738669;
         return IsHOMEGift && date.DayNumber < DayNumberHOME300;
     }
+
+    /// <summary>
+    ///  HOME Keldeo is a special case where height/weight is fixed.
+    /// </summary>
+    public bool IsScalarFixed => CardID is 9029;
+
+    private byte GetHomeScalar() => CardID switch
+    {
+        9029 => 128,
+        _ => throw new ArgumentException(),
+    };
+
 
     private DateOnly GetSuggestedDate()
     {
@@ -740,6 +759,15 @@ public sealed class WC8(byte[] Data) : DataMysteryGift(Data), ILangNick, INature
                 if (pk is IScaledSize { HeightScalar: 0, WeightScalar: 0 })
                     return false; // Disallow anything that's not an Old HOME gift from having 0/0.
             }
+        }
+
+        if (IsScalarFixed)
+        {
+            var scalar = GetHomeScalar();
+            if (pk is IScaledSize hw && (hw.HeightScalar != scalar || hw.WeightScalar != scalar))
+                return false;
+            if (pk is IScaledSize3 s && s.Scale != scalar)
+                return false;
         }
 
         // Duplicate card; one with Nickname specified and another without.
