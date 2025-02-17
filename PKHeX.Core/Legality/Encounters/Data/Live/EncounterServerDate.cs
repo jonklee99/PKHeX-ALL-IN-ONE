@@ -32,6 +32,7 @@ public static class EncounterServerDate
     /// <inheritdoc cref="IsValidDateWC8(WC8, DateOnly)"/>
     public static EncounterServerDateCheck IsValidDate(this IEncounterServerDate enc, DateOnly obtained) => enc switch
     {
+        WB7 wb7 => Result(IsValidDateWB7(wb7, obtained)),
         WC8 wc8 => Result(IsValidDateWC8(wc8, obtained)),
         WA8 wa8 => Result(IsValidDateWA8(wa8, obtained)),
         WB8 wb8 => Result(IsValidDateWB8(wb8, obtained)),
@@ -46,6 +47,8 @@ public static class EncounterServerDate
     /// <param name="card">Gift card to check.</param>
     /// <param name="obtained">Date obtained.</param>
     /// <returns>True if the date obtained is within the date of availability for the given <see cref="card"/>.</returns>
+    ///
+    public static bool IsValidDateWB7(WB7 card, DateOnly obtained) => WB7Gifts.TryGetValue(card.CardID, out var time) && IsValidDate(obtained, time);
     public static bool IsValidDateWC8(WC8 card, DateOnly obtained) => (WC8Gifts.TryGetValue(card.CardID, out var time)
                                                                       || WC8GiftsChk.TryGetValue(card.Checksum, out time)) && IsValidDate(obtained, time);
 
