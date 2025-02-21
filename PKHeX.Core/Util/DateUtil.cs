@@ -36,7 +36,7 @@ public static class DateUtil
     }
 
     private static readonly DateTime Epoch2000 = new(2000, 1, 1);
-    private const int SecondsPerDay = 60*60*24; // 86400
+    private const int SecondsPerDay = 60 * 60 * 24; // 86400
 
     public static int GetSecondsFrom2000(DateTime date, DateTime time)
     {
@@ -80,4 +80,9 @@ public static class DateUtil
 
     /// <inheritdoc cref="GetRandomDateWithin(DateOnly,DateOnly,Random)"/>
     public static DateOnly GetRandomDateWithin(DateOnly start, DateOnly end) => GetRandomDateWithin(start, end, Util.Rand);
+
+    public static bool IsTimeValid(byte receivedHour, byte receivedMinute, byte receivedSecond)
+    {
+        return receivedHour < 24u && receivedMinute < 60u && receivedSecond < 60u;
+    }
 }
