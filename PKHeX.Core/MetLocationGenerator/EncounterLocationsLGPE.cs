@@ -148,17 +148,17 @@ namespace PKHeX.Core.MetLocationGenerator
 
         private class EncounterInfo
         {
-            public string SpeciesName { get; set; }
+            public string? SpeciesName { get; set; }
             public int SpeciesIndex { get; set; }
             public int Form { get; set; }
-            public string LocationName { get; set; }
+            public string? LocationName { get; set; }
             public int LocationId { get; set; }
             public int MinLevel { get; set; }
             public int MaxLevel { get; set; }
-            public string EncounterType { get; set; }
+            public string? EncounterType { get; set; }
             public bool IsShinyLocked { get; set; }
-            public string FixedBall { get; set; }
-            public string EncounterVersion { get; set; } // "Let's Go Pikachu", "Let's Go Eevee", or "Both"
+            public string? FixedBall { get; set; }
+            public string? EncounterVersion { get; set; } // "Let's Go Pikachu", "Let's Go Eevee", or "Both"
         }
     }
 }

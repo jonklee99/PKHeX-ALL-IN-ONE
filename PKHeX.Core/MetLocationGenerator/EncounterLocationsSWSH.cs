@@ -61,7 +61,7 @@ namespace PKHeX.Core.MetLocationGenerator
                 {
                     bool canGigantamax = Gigantamax.CanToggle(slot.Species, slot.Form);
 
-                    AddEncounterInfo(encounterData, gameStrings, errorLogger, slot.Species, slot.Form, locationName, area.Location, slot.LevelMin, slot.LevelMax, $"Wild {slotType}", false, false, null, "Both", canGigantamax);
+                    AddEncounterInfo(encounterData, gameStrings, errorLogger, slot.Species, slot.Form, locationName, area.Location, slot.LevelMin, slot.LevelMax, $"Wild {slotType}", false, false, string.Empty, "Both", canGigantamax);
                 }
             }
         }
@@ -73,7 +73,8 @@ namespace PKHeX.Core.MetLocationGenerator
                 var locationName = gameStrings.GetLocationName(false, (ushort)encounter.Location, 8, 8, GameVersion.SWSH);
                 bool canGigantamax = Gigantamax.CanToggle(encounter.Species, encounter.Form) || encounter.CanGigantamax;
 
-                AddEncounterInfo(encounterData, gameStrings, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.Level, encounter.Level, "Static", encounter.Shiny == Shiny.Never, encounter.Gift, encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : null, versionName, canGigantamax);
+                // Use string.Empty instead of null for the fixedBall parameter
+                AddEncounterInfo(encounterData, gameStrings, errorLogger, encounter.Species, encounter.Form, locationName, encounter.Location, encounter.Level, encounter.Level, "Static", encounter.Shiny == Shiny.Never, encounter.Gift, encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : string.Empty, versionName, canGigantamax);
             }
         }
 
@@ -84,13 +85,13 @@ namespace PKHeX.Core.MetLocationGenerator
                 var locationName = gameStrings.GetLocationName(false, MaxLair, 8, 8, GameVersion.SWSH);
                 bool canGigantamax = Gigantamax.CanToggle(encounter.Species, encounter.Form) || encounter.CanGigantamax;
 
-                AddEncounterInfo(encounterData, gameStrings, errorLogger, encounter.Species, encounter.Form, locationName, MaxLair, encounter.Level, encounter.Level, "Max Lair", encounter.Shiny == Shiny.Never, false, null, "Both", canGigantamax);
+                AddEncounterInfo(encounterData, gameStrings, errorLogger, encounter.Species, encounter.Form, locationName, MaxLair, encounter.Level, encounter.Level, "Max Lair", encounter.Shiny == Shiny.Never, false, string.Empty, "Both", canGigantamax);
             }
         }
 
         private static void AddEncounterInfo(Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings,
             StreamWriter errorLogger, ushort speciesIndex, byte form, string locationName, int locationId, int minLevel, int maxLevel,
-            string encounterType, bool isShinyLocked = false, bool isGift = false, string fixedBall = null,
+            string encounterType, bool isShinyLocked = false, bool isGift = false, string fixedBall = "",
             string encounterVersion = "Both", bool canGigantamax = false)
         {
             var pt = PersonalTable.SWSH;
@@ -100,7 +101,6 @@ namespace PKHeX.Core.MetLocationGenerator
                 errorLogger.WriteLine($"[{DateTime.Now}] Species {speciesIndex} not present in SWSH. Skipping.");
                 return;
             }
-
             // Process base species and its evolutions
             AddEncounterInfoWithEvolutions(encounterData, gameStrings, pt, errorLogger, speciesIndex, form, locationName, locationId,
                 minLevel, maxLevel, encounterType, isShinyLocked, isGift, fixedBall, encounterVersion, canGigantamax);
@@ -244,7 +244,10 @@ namespace PKHeX.Core.MetLocationGenerator
                 return "Both";
             if ((version1 == "Sword" && version2 == "Shield") ||
                 (version1 == "Shield" && version2 == "Sword"))
+            {
                 return "Both";
+            }
+
             return version1; // Return existing version if they're the same
         }
 
@@ -268,13 +271,17 @@ namespace PKHeX.Core.MetLocationGenerator
                 e.Form == form &&
                 e.EncounterType == encounterType &&
                 e.CanGigantamax == canGigantamax &&
-                e.Gender == genderRatio); 
+                e.Gender == genderRatio);
 
             if (existingEncounter != null)
             {
                 existingEncounter.MinLevel = Math.Min(existingEncounter.MinLevel, minLevel);
                 existingEncounter.MaxLevel = Math.Max(existingEncounter.MaxLevel, maxLevel);
-                existingEncounter.EncounterVersion = CombineVersions(existingEncounter.EncounterVersion, encounterVersion);
+
+                // Ensure non-null values for both version parameters
+                string existingVersion = existingEncounter.EncounterVersion ?? string.Empty;
+                string newVersion = encounterVersion ?? string.Empty;
+                existingEncounter.EncounterVersion = CombineVersions(existingVersion, newVersion);
 
                 errorLogger.WriteLine($"[{DateTime.Now}] Updated existing encounter: {gameStrings.specieslist[speciesIndex]} " +
                     $"(Dex: {dexNumber}) at {locationName} (ID: {locationId}), Levels {existingEncounter.MinLevel}-{existingEncounter.MaxLevel}, " +
@@ -330,20 +337,20 @@ namespace PKHeX.Core.MetLocationGenerator
 
         private class EncounterInfo
         {
-            public string SpeciesName { get; set; }
+            public string? SpeciesName { get; set; }
             public int SpeciesIndex { get; set; }
             public int Form { get; set; }
-            public string LocationName { get; set; }
+            public string? LocationName { get; set; }
             public int LocationId { get; set; }
             public int MinLevel { get; set; }
             public int MaxLevel { get; set; }
-            public string EncounterType { get; set; }
+            public string? EncounterType { get; set; }
             public bool IsShinyLocked { get; set; }
             public bool IsGift { get; set; }
-            public string FixedBall { get; set; }
-            public string EncounterVersion { get; set; }
+            public string? FixedBall { get; set; }
+            public string? EncounterVersion { get; set; }
             public bool CanGigantamax { get; set; }
-            public string Gender { get; set; } 
+            public string? Gender { get; set; } 
         }
     }
 }

@@ -319,8 +319,8 @@ public sealed class PB7 : G6PKM, IHyperTrain, IAwakened, IScaledSizeValue, IComb
     // 0xAB Unused
     public byte FieldEventFatigue1 { get => Data[0xAC]; set => Data[0xAC] = value; }
     public byte FieldEventFatigue2 { get => Data[0xAD]; set => Data[0xAD] = value; }
-    public byte Fullness { get => Data[0xAE]; set => Data[0xAE] = value; }
-    public byte Enjoyment { get => Data[0xAF]; set => Data[0xAF] = value; }
+    public override byte Fullness { get => Data[0xAE]; set => Data[0xAE] = value; }
+    public override byte Enjoyment { get => Data[0xAF]; set => Data[0xAF] = value; }
     #endregion
     #region Block D
     public override string OriginalTrainerName

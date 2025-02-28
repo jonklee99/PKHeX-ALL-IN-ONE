@@ -75,7 +75,7 @@ namespace PKHeX.Core.MetLocationGenerator
                 foreach (var slot in area.Slots)
                 {
                     AddEncounterInfoWithEvolutions(encounterData, gameStrings, pt, errorLogger, slot.Species, slot.Form, locationName, locationId,
-                        slot.LevelMin, slot.LevelMax, "Wild", false, false, null, "Both", SizeType9.RANDOM, 0);
+                        slot.LevelMin, slot.LevelMax, "Wild", false, false, string.Empty, "Both", SizeType9.RANDOM, 0);
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace PKHeX.Core.MetLocationGenerator
 
                 AddEncounterInfoWithEvolutions(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName,
                     EncounterMight9.Location, encounter.Level, encounter.Level, "7-Star Raid", encounter.Shiny == Shiny.Never,
-                    false, null, "Both", encounter.ScaleType, encounter.Scale);
+                    false, string.Empty, "Both", encounter.ScaleType, encounter.Scale);
             }
         }
 
@@ -105,7 +105,7 @@ namespace PKHeX.Core.MetLocationGenerator
 
                 AddEncounterInfoWithEvolutions(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName, locationId,
                     encounter.Level, encounter.Level, "Static", encounter.Shiny == Shiny.Never, false,
-                    encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : null, versionName, SizeType9.RANDOM, 0);
+                    encounter.FixedBall != Ball.None ? encounter.FixedBall.ToString() : string.Empty, versionName, SizeType9.RANDOM, 0);
             }
         }
 
@@ -118,7 +118,7 @@ namespace PKHeX.Core.MetLocationGenerator
                     locationName = $"Unknown Location {encounter.Location}";
 
                 AddEncounterInfoWithEvolutions(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName,
-                    encounter.Location, encounter.Level, encounter.Level, "Fixed", false, false, null, "Both", SizeType9.RANDOM, 0);
+                    encounter.Location, encounter.Level, encounter.Level, "Fixed", false, false, string.Empty, "Both", SizeType9.RANDOM, 0);
             }
         }
 
@@ -139,7 +139,7 @@ namespace PKHeX.Core.MetLocationGenerator
 
                 AddEncounterInfoWithEvolutions(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName,
                     EncounterTera9.Location, encounter.Level, encounter.Level, $"{encounter.Stars}★ Tera Raid {groupName}",
-                    encounter.Shiny == Shiny.Never, false, null,
+                    encounter.Shiny == Shiny.Never, false, string.Empty,
                     encounter.IsAvailableHostScarlet && encounter.IsAvailableHostViolet ? "Both" :
                     (encounter.IsAvailableHostScarlet ? "Scarlet" : "Violet"), SizeType9.RANDOM, 0);
             }
@@ -157,7 +157,7 @@ namespace PKHeX.Core.MetLocationGenerator
 
                 AddEncounterInfoWithEvolutions(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName,
                     EncounterDist9.Location, encounter.Level, encounter.Level, $"Distribution Raid {encounter.Stars}★",
-                    encounter.Shiny == Shiny.Never, false, null, versionAvailability, encounter.ScaleType, encounter.Scale);
+                    encounter.Shiny == Shiny.Never, false, string.Empty, versionAvailability, encounter.ScaleType, encounter.Scale);
             }
         }
 
@@ -189,7 +189,7 @@ namespace PKHeX.Core.MetLocationGenerator
 
                 AddEncounterInfoWithEvolutions(encounterData, gameStrings, pt, errorLogger, encounter.Species, encounter.Form, locationName,
                     encounter.Location, encounter.LevelMin, encounter.LevelMax, "Outbreak", encounter.Shiny == Shiny.Never,
-                    false, null, "Both", encounter.IsForcedScaleRange ? SizeType9.VALUE : SizeType9.RANDOM,
+                    false, string.Empty, "Both", encounter.IsForcedScaleRange ? SizeType9.VALUE : SizeType9.RANDOM,
                     encounter.IsForcedScaleRange ? encounter.ScaleMin : (byte)0);
             }
         }
@@ -326,7 +326,10 @@ namespace PKHeX.Core.MetLocationGenerator
                 return "Both";
             if ((version1 == "Scarlet" && version2 == "Violet") ||
                 (version1 == "Violet" && version2 == "Scarlet"))
+            {
                 return "Both";
+            }
+
             return version1; // Return existing version if they're the same
         }
 
@@ -350,14 +353,18 @@ namespace PKHeX.Core.MetLocationGenerator
                 e.SpeciesIndex == speciesIndex &&
                 e.Form == form &&
                 e.EncounterType == encounterType &&
-                e.Gender == genderRatio); 
+                e.Gender == genderRatio);
 
             if (existingEncounter != null)
             {
                 // If this is the same species in the same location, combine versions and keep lowest level
                 existingEncounter.MinLevel = Math.Min(existingEncounter.MinLevel, minLevel);
                 existingEncounter.MaxLevel = Math.Max(existingEncounter.MaxLevel, maxLevel);
-                existingEncounter.EncounterVersion = CombineVersions(existingEncounter.EncounterVersion, encounterVersion);
+
+                // Ensure non-null values for both version parameters
+                string existingVersion = existingEncounter.EncounterVersion ?? string.Empty;
+                string newEncounterVersion = encounterVersion ?? string.Empty;
+                existingEncounter.EncounterVersion = CombineVersions(existingVersion, newEncounterVersion);
 
                 errorLogger.WriteLine($"[{DateTime.Now}] Updated existing encounter: {gameStrings.specieslist[speciesIndex]} " +
                     $"(Dex: {dexNumber}) at {locationName} (ID: {locationId}), Levels {existingEncounter.MinLevel}-{existingEncounter.MaxLevel}, " +
@@ -414,21 +421,21 @@ namespace PKHeX.Core.MetLocationGenerator
 
         private class EncounterInfo
         {
-            public string SpeciesName { get; set; }
+            public string? SpeciesName { get; set; }
             public int SpeciesIndex { get; set; }
             public int Form { get; set; }
-            public string LocationName { get; set; }
+            public string? LocationName { get; set; }
             public int LocationId { get; set; }
             public int MinLevel { get; set; }
             public int MaxLevel { get; set; }
-            public string EncounterType { get; set; }
+            public string? EncounterType { get; set; }
             public bool IsShinyLocked { get; set; }
             public bool IsGift { get; set; }
-            public string FixedBall { get; set; }
-            public string EncounterVersion { get; set; }
+            public string? FixedBall { get; set; }
+            public string? EncounterVersion { get; set; }
             public SizeType9 SizeType { get; set; }
             public byte SizeValue { get; set; }
-            public string Gender { get; set; }
+            public string? Gender { get; set; }
         }
     }
 }
