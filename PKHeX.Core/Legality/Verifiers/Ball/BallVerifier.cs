@@ -139,9 +139,10 @@ public sealed class BallVerifier : Verifier
         if (ball > Beast)
             return GetInvalid(LBallUnavailable);
 
-        // Paldea Starters: Only via GO (Adventures Abound)
+        // Sprigatito: Meowscarada the Unrivaled
+        // Fuecoco, Quaxly: Pokémon GO
         var species = enc.Species;
-        if (species is >= (int)Species.Sprigatito and <= (int)Species.Quaquaval)
+        if (species is >= (int)Species.Fuecoco and <= (int)Species.Quaquaval)
             return VerifyBallEquals(ball, BallUseLegality.WildPokeballs8g_WithoutRaid);
 
         var result = BallContextHOME.Instance.CanBreedWithBall(enc.Species, enc.Form, ball, pk);

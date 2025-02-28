@@ -353,19 +353,19 @@ namespace PKHeX.Core.MetLocationGenerator
 
         private class EncounterInfo
         {
-            public string SpeciesName { get; set; }
+            public string? SpeciesName { get; set; }
             public int SpeciesIndex { get; set; }
             public int Form { get; set; }
-            public string LocationName { get; set; }
+            public string? LocationName { get; set; }
             public int LocationId { get; set; }
             public int MinLevel { get; set; }
             public int MaxLevel { get; set; }
-            public string EncounterType { get; set; }
+            public string? EncounterType { get; set; }
             public bool IsAlpha { get; set; }
-            public string Gender { get; set; } 
+            public string? Gender { get; set; } 
             public int FlawlessIVCount { get; set; }
             public bool IsShiny { get; set; }
-            public string FixedBall { get; set; }
+            public string? FixedBall { get; set; }
             public bool FatefulEncounter { get; set; }
         }
     }
