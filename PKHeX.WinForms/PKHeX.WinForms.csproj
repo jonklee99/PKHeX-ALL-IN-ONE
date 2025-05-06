@@ -42,7 +42,6 @@
   <ItemGroup>
     <EmbeddedResource Include="MainWindow\Plugins\AutoModPlugins.dll" />
     <EmbeddedResource Include="MainWindow\Plugins\HomeLive.Plugins.dll" />
-    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins.dll" />
   </ItemGroup>
 
   <ItemGroup>
