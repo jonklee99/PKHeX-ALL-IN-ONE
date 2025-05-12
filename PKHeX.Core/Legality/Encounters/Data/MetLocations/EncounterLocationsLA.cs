@@ -6,8 +6,19 @@ using System.Text;
 using System.Text.Json;
 
 namespace PKHeX.Core.Legality.Encounters.Data.MetLocations;
+
+/// <summary>
+/// Generates encounter location data for Pokémon Legends: Arceus as JSON.
+/// </summary>
 public static class EncounterLocationsLA
 {
+    /// <summary>
+    /// Generates JSON file with encounter data for Pokémon Legends: Arceus.
+    /// </summary>
+    /// <param name="outputPath">Path to save the generated JSON file</param>
+    /// <param name="errorLogPath">Path to save error logs</param>
+    /// <exception cref="ArgumentNullException">Thrown when parameters are null</exception>
+    /// <exception cref="Exception">Thrown when an error occurs during generation</exception>
     public static void GenerateEncounterDataJSON(string outputPath, string errorLogPath)
     {
         ArgumentNullException.ThrowIfNull(outputPath);
@@ -42,6 +53,13 @@ public static class EncounterLocationsLA
         }
     }
 
+    /// <summary>
+    /// Processes encounter slots and adds them to the encounter data dictionary.
+    /// </summary>
+    /// <param name="areas">Areas containing encounter slots</param>
+    /// <param name="encounterData">Dictionary to store encounter information</param>
+    /// <param name="gameStrings">Game strings for localization</param>
+    /// <param name="errorLogger">Stream writer for logging errors</param>
     private static void ProcessEncounterSlots(EncounterArea8a[] areas, Dictionary<string, List<EncounterInfo>> encounterData,
         GameStrings gameStrings, StreamWriter errorLogger)
     {
@@ -60,6 +78,13 @@ public static class EncounterLocationsLA
         }
     }
 
+    /// <summary>
+    /// Processes static encounters and adds them to the encounter data dictionary.
+    /// </summary>
+    /// <param name="encounters">Static encounters to process</param>
+    /// <param name="encounterData">Dictionary to store encounter information</param>
+    /// <param name="gameStrings">Game strings for localization</param>
+    /// <param name="errorLogger">Stream writer for logging errors</param>
     private static void ProcessStaticEncounters(EncounterStatic8a[] encounters, Dictionary<string, List<EncounterInfo>> encounterData,
         GameStrings gameStrings, StreamWriter errorLogger)
     {
@@ -75,6 +100,15 @@ public static class EncounterLocationsLA
         }
     }
 
+    /// <summary>
+    /// Adds alternate form encounters for species with multiple forms.
+    /// </summary>
+    /// <param name="baseEncounter">Base encounter that might have alternate forms</param>
+    /// <param name="locationId">Location ID of the encounter</param>
+    /// <param name="encounterType">Type of the encounter (e.g., "Static", "Grass")</param>
+    /// <param name="encounterData">Dictionary to store encounter information</param>
+    /// <param name="gameStrings">Game strings for localization</param>
+    /// <param name="errorLogger">Stream writer for logging errors</param>
     private static void AddAlternateFormEncounters(ISpeciesForm baseEncounter, ushort locationId, string encounterType,
         Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
     {
@@ -137,6 +171,12 @@ public static class EncounterLocationsLA
         }
     }
 
+    /// <summary>
+    /// Creates a form variant encounter based on the base encounter with a new form.
+    /// </summary>
+    /// <param name="baseEncounter">Base encounter to derive from</param>
+    /// <param name="newForm">New form number to apply</param>
+    /// <returns>New ISpeciesForm with the alternate form</returns>
     private static ISpeciesForm CreateFormVariantEncounter(ISpeciesForm baseEncounter, byte newForm)
     {
         ArgumentNullException.ThrowIfNull(baseEncounter);
@@ -176,6 +216,15 @@ public static class EncounterLocationsLA
         };
     }
 
+    /// <summary>
+    /// Adds encounter information and follows the evolution line to add evolved forms.
+    /// </summary>
+    /// <param name="encounter">Encounter to process</param>
+    /// <param name="locationId">Location ID of the encounter</param>
+    /// <param name="encounterType">Type of the encounter (e.g., "Static", "Grass")</param>
+    /// <param name="encounterData">Dictionary to store encounter information</param>
+    /// <param name="gameStrings">Game strings for localization</param>
+    /// <param name="errorLogger">Stream writer for logging errors</param>
     private static void AddEncounterInfoWithEvolutions(ISpeciesForm encounter, ushort locationId, string encounterType,
         Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger)
     {
@@ -219,6 +268,21 @@ public static class EncounterLocationsLA
             speciesIndex, form, pt, processedForms, metLevel);
     }
 
+    /// <summary>
+    /// Processes the evolution line of a species to add evolved forms.
+    /// </summary>
+    /// <param name="baseEncounter">Base encounter to derive evolutions from</param>
+    /// <param name="locationId">Location ID of the encounter</param>
+    /// <param name="locationName">Location name of the encounter</param>
+    /// <param name="encounterType">Type of the encounter (e.g., "Static", "Grass")</param>
+    /// <param name="encounterData">Dictionary to store encounter information</param>
+    /// <param name="gameStrings">Game strings for localization</param>
+    /// <param name="errorLogger">Stream writer for logging errors</param>
+    /// <param name="species">Species ID of the Pokémon</param>
+    /// <param name="form">Form number of the Pokémon</param>
+    /// <param name="pt">Personal table for Legends Arceus</param>
+    /// <param name="processedForms">Set of already processed species/form pairs</param>
+    /// <param name="metLevel">Original met level for the encounter</param>
     private static void ProcessEvolutionLine(ISpeciesForm baseEncounter, ushort locationId, string locationName, string encounterType,
         Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger,
         ushort species, byte form, PersonalTable8LA pt, HashSet<(ushort Species, byte Form)> processedForms, int metLevel)
@@ -268,6 +332,14 @@ public static class EncounterLocationsLA
         }
     }
 
+    /// <summary>
+    /// Gets immediate evolutions for a species and form.
+    /// </summary>
+    /// <param name="species">Species ID</param>
+    /// <param name="form">Form number</param>
+    /// <param name="pt">Personal table for Legends Arceus</param>
+    /// <param name="processedForms">Set of already processed species/form pairs</param>
+    /// <returns>List of species and form pairs for immediate evolutions</returns>
     private static List<(ushort Species, byte Form)> GetImmediateEvolutions(
         ushort species,
         byte form,
@@ -300,6 +372,14 @@ public static class EncounterLocationsLA
         return results;
     }
 
+    /// <summary>
+    /// Gets the minimum level required for evolution.
+    /// </summary>
+    /// <param name="baseSpecies">Base species ID</param>
+    /// <param name="baseForm">Base form number</param>
+    /// <param name="evolvedSpecies">Evolved species ID</param>
+    /// <param name="evolvedForm">Evolved form number</param>
+    /// <returns>Minimum level required for evolution</returns>
     private static int GetMinEvolutionLevel(ushort baseSpecies, byte baseForm, ushort evolvedSpecies, byte evolvedForm)
     {
         var tree = EvolutionTree.GetEvolutionTree(EntityContext.Gen8a);
@@ -332,6 +412,11 @@ public static class EncounterLocationsLA
         return minLevel;
     }
 
+    /// <summary>
+    /// Gets the evolution level from an evolution method.
+    /// </summary>
+    /// <param name="evo">Evolution method</param>
+    /// <returns>Level required for evolution</returns>
     private static int GetEvolutionLevel(EvolutionMethod evo)
     {
         if (evo.Level > 0)
@@ -341,6 +426,14 @@ public static class EncounterLocationsLA
         return 0;
     }
 
+    /// <summary>
+    /// Creates an evolved encounter from a base encounter.
+    /// </summary>
+    /// <param name="baseEncounter">Base encounter to derive from</param>
+    /// <param name="evoSpecies">Evolved species ID</param>
+    /// <param name="evoForm">Evolved form number</param>
+    /// <param name="minLevel">Minimum level for the evolved form</param>
+    /// <returns>New ISpeciesForm with the evolved species</returns>
     private static ISpeciesForm CreateEvolvedEncounter(ISpeciesForm baseEncounter, ushort evoSpecies, byte evoForm, int minLevel)
     {
         ArgumentNullException.ThrowIfNull(baseEncounter);
@@ -380,8 +473,37 @@ public static class EncounterLocationsLA
         };
     }
 
+    // Legends Arceus Ribbon and Mark definitions
+    private static readonly string[] LAValidRibbons = ["Hisui"];
+
+    // Previous generation ribbons that can be present
+    private static readonly string[] PreviousGenRibbons =
+    [
+        "ChampionKalos", "ChampionG3", "ChampionSinnoh", "BestFriends", "Training",
+        "BattlerSkillful", "BattlerExpert", "Effort", "Alert", "Shock", "Downcast",
+        "Careless", "Relax", "Snooze", "Smile", "Gorgeous", "Royal", "GorgeousRoyal",
+        "Artist", "Footprint", "Record", "Legend", "Country", "National", "Earth",
+        "World", "Classic", "Premier", "Event", "Birthday", "Special", "Souvenir",
+        "Wishing", "ChampionBattle", "ChampionRegional", "ChampionNational",
+        "ChampionWorld", "ChampionG6Hoenn", "ContestStar", "MasterCoolness",
+        "MasterBeauty", "MasterCuteness", "MasterCleverness", "MasterToughness",
+        "ChampionAlola", "BattleRoyale", "BattleTreeGreat", "BattleTreeMaster",
+        "ChampionGalar", "TowerMaster", "MasterRank"
+    ];
+
+    /// <summary>
+    /// Adds a single encounter to the encounter data dictionary.
+    /// </summary>
+    /// <param name="encounter">Encounter to add</param>
+    /// <param name="locationId">Location ID of the encounter</param>
+    /// <param name="locationName">Location name of the encounter</param>
+    /// <param name="encounterType">Type of the encounter (e.g., "Static", "Grass")</param>
+    /// <param name="encounterData">Dictionary to store encounter information</param>
+    /// <param name="gameStrings">Game strings for localization</param>
+    /// <param name="errorLogger">Stream writer for logging errors</param>
+    /// <param name="metLevel">Original met level for the encounter</param>
     private static void AddSingleEncounterInfo(ISpeciesForm encounter, ushort locationId, string locationName, string encounterType,
-        Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger, int metLevel)
+       Dictionary<string, List<EncounterInfo>> encounterData, GameStrings gameStrings, StreamWriter errorLogger, int metLevel)
     {
         ArgumentNullException.ThrowIfNull(encounter);
         ArgumentNullException.ThrowIfNull(locationName);
@@ -432,18 +554,30 @@ public static class EncounterLocationsLA
                     existingEncounter.MinLevel = Math.Min(existingEncounter.MinLevel, slotUpdate.LevelMin);
                     existingEncounter.MaxLevel = Math.Max(existingEncounter.MaxLevel, slotUpdate.LevelMax);
                     existingEncounter.MetLevel = Math.Min(existingEncounter.MetLevel, metLevel);
+
+                    // Update FlawlessIVCount if the new value is higher
+                    if (slotUpdate.FlawlessIVCount > existingEncounter.FlawlessIVCount)
+                    {
+                        existingEncounter.FlawlessIVCount = slotUpdate.FlawlessIVCount;
+                    }
                     break;
 
                 case EncounterStatic8a staticUpdate:
                     existingEncounter.MinLevel = Math.Min(existingEncounter.MinLevel, staticUpdate.LevelMin);
                     existingEncounter.MaxLevel = Math.Max(existingEncounter.MaxLevel, staticUpdate.LevelMax);
                     existingEncounter.MetLevel = Math.Min(existingEncounter.MetLevel, metLevel);
+
+                    // Update FlawlessIVCount if the new value is higher
+                    if (staticUpdate.FlawlessIVCount > existingEncounter.FlawlessIVCount)
+                    {
+                        existingEncounter.FlawlessIVCount = staticUpdate.FlawlessIVCount;
+                    }
                     break;
             }
 
             errorLogger.WriteLine($"[{DateTime.Now}] Updated existing encounter: {existingEncounter.SpeciesName} " +
                 $"(Dex: {dexNumber}) at {locationName} (ID: {locationId}), Levels {existingEncounter.MinLevel}-{existingEncounter.MaxLevel}, " +
-                $"Met Level: {existingEncounter.MetLevel}");
+                $"Met Level: {existingEncounter.MetLevel}, FlawlessIVCount: {existingEncounter.FlawlessIVCount}");
         }
         else
         {
@@ -485,13 +619,168 @@ public static class EncounterLocationsLA
                     break;
             }
 
+            // Set marks and ribbons for this encounter
+            SetEncounterMarksAndRibbons(info, errorLogger);
+
+            // Set legal balls for this encounter
+            SetLegalBalls(info, errorLogger);
+
             encounterList.Add(info);
             errorLogger.WriteLine($"[{DateTime.Now}] Processed new encounter: {info.SpeciesName} " +
                 $"(Dex: {dexNumber}) at {locationName} (ID: {locationId}), Levels {info.MinLevel}-{info.MaxLevel}, " +
-                $"Met Level: {info.MetLevel}, Type: {encounterType}, Gender: {info.Gender}, IsShinyLocked: {info.IsShinyLocked}, Form: {info.Form}");
+                $"Met Level: {info.MetLevel}, Type: {encounterType}, Gender: {info.Gender}, IsShinyLocked: {info.IsShinyLocked}, " +
+                $"Form: {info.Form}, FlawlessIVCount: {info.FlawlessIVCount}, IsAlpha: {info.IsAlpha}, " +
+                $"Required Marks: {string.Join(", ", info.RequiredMarks)}, " +
+                $"Possible Marks: {string.Join(", ", info.PossibleMarks)}, " +
+                $"Legal Balls: {string.Join(", ", info.LegalBalls)}");
         }
     }
 
+    /// <summary>
+    /// Sets the legal balls for a Legends Arceus encounter.
+    /// </summary>
+    /// <param name="encounter">The encounter to set legal balls for</param>
+    /// <param name="errorLogger">Logger for recording processing information</param>
+    private static void SetLegalBalls(EncounterInfo encounter, StreamWriter errorLogger)
+    {
+        var legalBalls = new List<int>();
+
+        // Check if there's a fixed ball first (highest priority)
+        if (!string.IsNullOrEmpty(encounter.FixedBall))
+        {
+            if (Enum.TryParse(encounter.FixedBall, out Ball fixedBall))
+            {
+                legalBalls.Add(ConvertBallToImageId(fixedBall));
+                encounter.LegalBalls = [.. legalBalls];
+                errorLogger.WriteLine($"[{DateTime.Now}] Fixed ball: {encounter.FixedBall}");
+                return;
+            }
+        }
+
+        // Get the appropriate ball mask for Legends Arceus encounters
+        // In PLA, encounters use the PLA-specific ball set
+        ulong ballPermitMask = BallUseLegality.GetWildBalls(8, GameVersion.PLA);
+
+        // Convert the bitmask to a list of legal balls
+        for (byte ballId = 1; ballId < 64; ballId++)
+        {
+            if (BallUseLegality.IsBallPermitted(ballPermitMask, ballId))
+            {
+                var ball = (Ball)ballId;
+                legalBalls.Add(ConvertBallToImageId(ball));
+            }
+        }
+
+        // Special case for Noble encounters (legendary/boss Pokémon)
+        // These encounters might have restricted ball usage in lore, but for completeness
+        // we're including all PLA balls as they're technically catchable with any PLA ball
+        if (encounter.EncounterType == "Static" &&
+            (encounter.SpeciesName.Contains("Noble") || IsLegendaryOrMythical(encounter.SpeciesIndex)))
+        {
+            // Keep using the standard PLA balls - already handled above
+        }
+
+        encounter.LegalBalls = [.. legalBalls];
+        errorLogger.WriteLine($"[{DateTime.Now}] Legal balls: {string.Join(", ", legalBalls)}");
+    }
+
+    /// <summary>
+    /// Checks if a species is Legendary or Mythical.
+    /// </summary>
+    /// <param name="species">The species index to check</param>
+    /// <returns>True if the species is Legendary or Mythical</returns>
+    private static bool IsLegendaryOrMythical(int species)
+    {
+        // Legendary and Mythical Pokémon available in PLA
+        return species is 144 or 145 or 146 or 150 or 151 or 243 or 244 or 245 or 249 or 250 or 251 or
+                         377 or 378 or 379 or 480 or 481 or 482 or 483 or 484 or 485 or 486 or 487 or 491 or 493 or
+                         638 or 639 or 640 or 641 or 642 or 645 or 646 or 647 or 649 or 718 or 719 or 720 or 721 or
+                         800 or 801;
+    }
+
+    /// <summary>
+    /// Converts a Ball enum value to the corresponding image ID in the ballImageMap.
+    /// </summary>
+    private static int ConvertBallToImageId(Ball ball)
+    {
+        return ball switch
+        {
+            Ball.Master => 1,
+            Ball.LAPoke => 2,
+            Ball.LAUltra => 3,
+            Ball.Dream => 4,
+            Ball.LAWing => 5,
+            Ball.LAJet => 6,
+            Ball.LALeaden => 7,
+            Ball.LAOrigin => 8, // Origin Ball appears to be 8 in your image map
+            Ball.LAGigaton => 9,
+            Ball.Strange => 10,
+            Ball.Beast => 11,
+            Ball.Ultra => 12,
+            Ball.Great => 13,
+            Ball.Poke => 14,
+            Ball.Safari => 15,
+            Ball.Net => 16,
+            Ball.Dive => 17,
+            Ball.Nest => 18,
+            Ball.Repeat => 19,
+            Ball.Timer => 20,
+            Ball.Luxury => 21,
+            Ball.Premier => 22,
+            Ball.Dusk => 23,
+            Ball.Heal => 24,
+            Ball.Quick => 25,
+            Ball.Cherish => 26,
+            Ball.Fast => 27,
+            Ball.Level => 28,
+            Ball.Lure => 29,
+            Ball.Heavy => 30,
+            Ball.Love => 31,
+            Ball.Friend => 32,
+            Ball.Moon => 33,
+            Ball.Sport => 34,
+            Ball.LAGreat => 36,
+            Ball.LAHeavy => 37,
+            Ball.LAFeather => 38,
+            _ => 14, // Default to Poké Ball for any unmapped balls
+        };
+    }
+
+    /// <summary>
+    /// Sets marks and ribbons for a specific encounter.
+    /// </summary>
+    /// <param name="encounter">The encounter to set marks and ribbons for</param>
+    /// <param name="errorLogger">Logger for recording processing information</param>
+    private static void SetEncounterMarksAndRibbons(EncounterInfo encounter, StreamWriter errorLogger)
+    {
+        var requiredMarks = new List<string>();
+        var possibleMarks = new List<string>();
+        var validRibbons = new List<string>();
+
+        // Add Alpha mark for Alpha encounters
+        if (encounter.IsAlpha)
+        {
+            requiredMarks.Add("MarkAlpha");
+        }
+
+        // Add valid ribbons for LA
+        validRibbons.AddRange(LAValidRibbons);
+        validRibbons.AddRange(PreviousGenRibbons);
+
+        encounter.RequiredMarks = [.. requiredMarks];
+        encounter.PossibleMarks = [.. possibleMarks.Except(requiredMarks).ToArray()];
+        encounter.ValidRibbons = [.. validRibbons];
+
+        errorLogger.WriteLine($"[{DateTime.Now}] Mark/Ribbon analysis for {encounter.SpeciesName}: " +
+            $"Required Marks: {string.Join(", ", requiredMarks)}, " +
+            $"Possible Marks: {string.Join(", ", possibleMarks)}");
+    }
+
+    /// <summary>
+    /// Determines the gender ratio description for a Pokémon.
+    /// </summary>
+    /// <param name="personalInfo">Personal info of the Pokémon</param>
+    /// <returns>String describing the gender ratio</returns>
     private static string DetermineGenderRatio(IPersonalInfo personalInfo)
     {
         ArgumentNullException.ThrowIfNull(personalInfo);
@@ -508,23 +797,103 @@ public static class EncounterLocationsLA
         };
     }
 
+    /// <summary>
+    /// Contains information about a Pokémon encounter for JSON output.
+    /// </summary>
     private sealed class EncounterInfo
     {
+        /// <summary>
+        /// Name of the Pokémon species.
+        /// </summary>
         public required string SpeciesName { get; set; }
+
+        /// <summary>
+        /// Pokédex index of the species.
+        /// </summary>
         public required int SpeciesIndex { get; set; }
+
+        /// <summary>
+        /// Form number of the Pokémon.
+        /// </summary>
         public required int Form { get; set; }
+
+        /// <summary>
+        /// Name of the location where the Pokémon can be encountered.
+        /// </summary>
         public required string LocationName { get; set; }
+
+        /// <summary>
+        /// ID of the location where the Pokémon can be encountered.
+        /// </summary>
         public required int LocationId { get; set; }
+
+        /// <summary>
+        /// Minimum level of the encounter.
+        /// </summary>
         public required int MinLevel { get; set; }
+
+        /// <summary>
+        /// Maximum level of the encounter.
+        /// </summary>
         public required int MaxLevel { get; set; }
+
+        /// <summary>
+        /// Level that will be recorded as the met level.
+        /// </summary>
         public required int MetLevel { get; set; }
+
+        /// <summary>
+        /// Type of encounter (e.g., "Static", "Grass").
+        /// </summary>
         public required string EncounterType { get; set; }
+
+        /// <summary>
+        /// Whether the encountered Pokémon is an Alpha.
+        /// </summary>
         public required bool IsAlpha { get; set; }
+
+        /// <summary>
+        /// Gender ratio description for the Pokémon.
+        /// </summary>
         public required string Gender { get; set; }
+
+        /// <summary>
+        /// Number of guaranteed perfect IVs (31) for the encounter.
+        /// </summary>
         public required int FlawlessIVCount { get; set; }
+
+        /// <summary>
+        /// Whether the encounter is shiny-locked.
+        /// </summary>
         public required bool IsShinyLocked { get; set; }
+
+        /// <summary>
+        /// If the encounter requires a specific ball type, this will contain its name.
+        /// </summary>
         public required string FixedBall { get; set; }
+
+        /// <summary>
+        /// Whether the encounter has the fateful encounter flag.
+        /// </summary>
         public required bool FatefulEncounter { get; set; }
+
+        /// <summary>
+        /// Required Marks that an encounter must have.
+        /// </summary>
+        public string[] RequiredMarks { get; set; } = [];
+
+        /// <summary>
+        /// Possible Marks that an encounter can have, but are not guaranteed.
+        /// </summary>
+        public string[] PossibleMarks { get; set; } = [];
+
+        /// <summary>
+        /// Valid Ribbons that an encounter can have.
+        /// </summary>
+        public string[] ValidRibbons { get; set; } = [];
+        /// <summary>
+        /// Legal balls that can be used for this encounter.
+        /// </summary>
+        public int[] LegalBalls { get; set; } = [];
     }
 }
-
