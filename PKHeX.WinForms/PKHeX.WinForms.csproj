@@ -47,7 +47,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="MainWindow\Plugins\PluginPile.dll" />
-    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins.dll" />
   </ItemGroup>
 
   <ItemGroup>
