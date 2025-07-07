@@ -57,6 +57,11 @@ public static class WinFormsUtil
         }
     }
 
+    /// <summary>
+    /// Searches upwards through the control hierarchy to find the first parent control of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="sender">Child control to start searching from.</param>
+    /// <returns>The first parent control of type <typeparamref name="T"/>, or null if none found.</returns>
     public static T? GetUnderlyingControl<T>(object sender) where T : class
     {
         while (true)
@@ -77,6 +82,11 @@ public static class WinFormsUtil
         }
     }
 
+    /// <summary>
+    /// Checks if a window of type <typeparamref name="T"/> already exists and brings it to the front if it does.
+    /// </summary>
+    /// <param name="parent">The parent form to center the window on.</param>
+    /// <returns><c>true</c> if the window exists and was brought to the front; otherwise, <c>false</c>.</returns>
     public static bool OpenWindowExists<T>(this Form parent) where T : Form
     {
         var form = FirstFormOfType<T>();
@@ -106,16 +116,16 @@ public static class WinFormsUtil
     /// </summary>
     /// <param name="lines">User-friendly message about the error.</param>
     /// <returns>The <see cref="DialogResult"/> associated with the dialog.</returns>
-    internal static DialogResult Error(params string[] lines)
+    internal static DialogResult Error(params ReadOnlySpan<string?> lines)
     {
         System.Media.SystemSounds.Hand.Play();
         string msg = string.Join(Environment.NewLine + Environment.NewLine, lines);
         return MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 
-    internal static DialogResult Alert(params string[] lines) => Alert(true, lines);
+    internal static DialogResult Alert(params ReadOnlySpan<string?> lines) => Alert(true, lines);
 
-    internal static DialogResult Alert(bool sound, params string[] lines)
+    internal static DialogResult Alert(bool sound, params ReadOnlySpan<string?> lines)
     {
         if (sound)
             System.Media.SystemSounds.Asterisk.Play();
@@ -123,7 +133,7 @@ public static class WinFormsUtil
         return MessageBox.Show(msg, "Alert", MessageBoxButtons.OK, sound ? MessageBoxIcon.Information : MessageBoxIcon.None);
     }
 
-    internal static DialogResult Prompt(MessageBoxButtons btn, params string[] lines)
+    internal static DialogResult Prompt(MessageBoxButtons btn, params ReadOnlySpan<string?> lines)
     {
         System.Media.SystemSounds.Asterisk.Play();
         string msg = string.Join(Environment.NewLine + Environment.NewLine, lines);
