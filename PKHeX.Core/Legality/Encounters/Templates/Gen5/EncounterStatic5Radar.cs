@@ -60,13 +60,19 @@ public sealed record EncounterStatic5Radar(ushort Species, byte Form, AbilityPer
         return pk;
     }
 
+    /// <summary>
+    /// Generates and assigns PID, IVs, nature, and ability for a Dream Radar encounter Pokémon based on the provided criteria and personal info.
+    /// </summary>
+    /// <param name="pk">The PK5 Pokémon object to modify.</param>
+    /// <param name="criteria">Encounter criteria specifying nature, IVs, and other constraints.</param>
+    /// <param name="pi">Personal information for the species and form, including gender.</param>
     private void SetPINGA(PK5 pk, in EncounterCriteria criteria, PersonalInfo5B2W2 pi)
     {
-        var abilityIndex = criteria.GetAbilityFromNumber(Ability);
-        var seed = Util.Rand32();
-        MonochromeRNG.Generate(pk, criteria with { Shiny = Shiny.Never }, pi.Gender, seed, abilityIndex);
+        var seed = Util.Rand.Rand64();
+        MonochromeRNG.Generate(pk, criteria, pi.Gender, seed, false, Shiny, Ability);
 
         pk.Nature = criteria.GetNature();
+        var abilityIndex = Ability == AbilityPermission.OnlyHidden ? 2 : (int)(pk.PID >> 16) & 1;
         pk.RefreshAbility(abilityIndex);
         criteria.SetRandomIVs(pk);
     }

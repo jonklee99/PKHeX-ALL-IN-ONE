@@ -67,13 +67,19 @@ public sealed record EncounterStatic5Entree(GameVersion Version, ushort Species,
         return pk;
     }
 
+    /// <summary>
+    /// Sets the personality, IVs, nature, gender, ability, and shiny status for a PK5 Pokémon based on the provided encounter criteria and personal info.
+    /// </summary>
+    /// <param name="pk">The PK5 Pokémon object to modify.</param>
+    /// <param name="criteria">Encounter criteria specifying nature, ability, IVs, and other attributes.</param>
+    /// <param name="pi">Personal info for the species, including gender data.</param>
     private void SetPINGA(PK5 pk, in EncounterCriteria criteria, PersonalInfo5B2W2 pi)
     {
-        var abilityIndex = criteria.GetAbilityFromNumber(Ability);
-        var seed = Util.Rand32();
-        MonochromeRNG.Generate(pk, criteria with { Shiny = Shiny.Never }, pi.Gender, seed, abilityIndex);
+        var seed = Util.Rand.Rand64();
+        MonochromeRNG.Generate(pk, criteria, pi.Gender, seed, false, Shiny, Ability, Gender);
 
         pk.Nature = criteria.GetNature();
+        var abilityIndex = criteria.GetAbilityFromNumber(Ability); // 0 or H
         pk.RefreshAbility(abilityIndex);
         criteria.SetRandomIVs(pk);
     }

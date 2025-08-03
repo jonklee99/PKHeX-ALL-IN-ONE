@@ -1,3 +1,5 @@
+using System;
+
 namespace PKHeX.Core;
 
 /// <summary>
@@ -28,13 +30,18 @@ public sealed record EncounterSlot5(EncounterArea5 Parent, ushort Species, byte 
     {
         HiddenAbilityPermission.Never => AbilityPermission.Any12,
         HiddenAbilityPermission.Always => AbilityPermission.OnlyHidden,
-        _ => AbilityPermission.Any12H,
+        _ => throw new ArgumentOutOfRangeException(),
     };
 
-    private bool IsDeferredHiddenAbility(bool IsHidden) => IsHiddenAbilitySlot() switch
+    /// <summary>
+    /// Determines if the hidden ability status should be deferred based on the slot's hidden ability permission and the provided flag.
+    /// </summary>
+    /// <param name="isHidden">Indicates whether the hidden ability is currently selected.</param>
+    /// <returns>True if the hidden ability status is deferred; otherwise, false.</returns>
+    private bool IsDeferredHiddenAbility(bool isHidden) => IsHiddenAbilitySlot() switch
     {
-        HiddenAbilityPermission.Never => IsHidden,
-        HiddenAbilityPermission.Always => !IsHidden,
+        HiddenAbilityPermission.Never => isHidden,
+        HiddenAbilityPermission.Always => !isHidden,
         _ => false,
     };
 
@@ -80,12 +87,18 @@ public sealed record EncounterSlot5(EncounterArea5 Parent, ushort Species, byte 
         return (byte)Util.Rand.Next(PersonalTable.B2W2[Species].FormCount);
     }
 
+    /// <summary>
+    /// Sets the PID, IVs, nature, gender, shiny status, and ability for a generated PK5 Pokémon based on encounter criteria and personal info.
+    /// </summary>
+    /// <param name="pk">The PK5 Pokémon instance to modify.</param>
+    /// <param name="criteria">Criteria specifying encounter constraints such as nature and IVs.</param>
+    /// <param name="pi">Personal information for the species, including gender data.</param>
     private void SetPINGA(PK5 pk, in EncounterCriteria criteria, PersonalInfo5B2W2 pi)
     {
-        var abilityIndex = criteria.GetAbilityFromNumber(Ability);
-        var seed = Util.Rand32();
-        MonochromeRNG.Generate(pk, criteria, pi.Gender, seed, abilityIndex);
+        var seed = Util.Rand.Rand64();
+        MonochromeRNG.Generate(pk, criteria, pi.Gender, seed, true, Shiny, Ability);
         pk.Nature = criteria.GetNature();
+        var abilityIndex = Ability == AbilityPermission.OnlyHidden ? 2 : (int)((pk.PID >> 16) & 1);
         pk.RefreshAbility(abilityIndex);
         criteria.SetRandomIVs(pk);
     }
