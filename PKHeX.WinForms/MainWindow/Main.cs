@@ -75,7 +75,7 @@ public partial class Main : Form
     public static string CryPath => Settings.LocalResources.GetCryPath();
     private static string TemplatePath => Settings.LocalResources.GetTemplatePath();
     private static string TrainerPath => Settings.LocalResources.GetTrainerPath();
-    private const string ThreadPath = "https://projectpokemon.org/pkhex/";
+    private const string ThreadPath = "https://github.com/hexbyt3/PKHeX-ALL-IN-ONE/releases";
 
     public static PKHeXSettings Settings => Program.Settings;
 
@@ -181,9 +181,10 @@ public partial class Main : Form
         var folder = Settings.LocalResources.GetPluginPath();
         if (Plugins.Count != 0)
             return; // already loaded
+#if !MERGED // merged should load dlls from within too, folder is no longer required
         if (!Directory.Exists(folder))
             return;
-
+#endif
         try
         {
             Plugins.AddRange(PluginLoader.LoadPlugins<IPlugin>(folder, Settings.Startup.PluginLoadMethod));
@@ -194,7 +195,7 @@ public partial class Main : Form
             return;
         }
 
-        var list = Plugins.OrderBy(z => z.Priority);
+        var list = Plugins.OrderBy(z => z.Priority).ToList();
         foreach (var p in list)
         {
             try
