@@ -66,9 +66,6 @@
     <EmbeddedResource Include="MainWindow\Plugins\SWSHSeedFinderPlugin.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainWindow\Plugins\TeraFinder.Plugins.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
